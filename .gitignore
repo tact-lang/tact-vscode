@@ -1,0 +1,11 @@
+.DS_Store
+.vs
+.vscode-test
+node_modules
+out
+tmp
+.nyc_output
+coverage
+
+/*.vsix
+/*.log

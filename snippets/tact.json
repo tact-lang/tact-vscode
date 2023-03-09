@@ -1,0 +1,94 @@
+{
+	".source.tact": {
+		"spdx license": {
+			"prefix": "spdx", 
+			"body": "// SPDX-License-Identifier: MIT",
+			"description": "SPDX License"
+		},
+		"contract declaration": {
+			"prefix": "con",
+			"body": "contract ${1:Name} {\n\t$0\n}",
+			"description": "A template for contract."
+		},
+		"import contract": {
+			"prefix": "imp",
+			"body": "import '${1:contract}';",
+			"description": "A template for import contract."
+		},
+		"import @stdlib/deploy": {
+			"prefix": "impdep",
+			"body": "import \"@stdlib/deploy\";",
+			"description": "A template for import deploy."
+		},
+		"import @stdlib/ownable": {
+			"prefix": "impown",
+			"body": "import \"@stdlib/ownable\";",
+			"description": "A template for import ownable."
+		},
+		"import @stdlib/stoppable": {
+			"prefix": "impstop",
+			"body": "import \"@stdlib/stoppable\";",
+			"description": "A template for import stoppable."
+		},
+		"mapping declaration":{
+			"prefix": "map",
+			"body": "map[${1:type1}]${2:type2};"
+		},
+		"init with 0 param declaration": {
+			"prefix": "init",
+			"body": "init () {\n\t$0\n}"
+		},
+		"init with 1 param declaration": {
+			"prefix": "init1",
+			"body": "init (${1:name}: ${2:type}) {\n\t$0\n}"
+		},
+		"init with 2 param declaration": {
+			"prefix": "init2",
+			"body": "init (${1:name}: ${2:type}, ${3:name}: ${4:type}) {\n\t$0\n}"
+		},
+		"function declaration": {
+			"prefix": "fun",
+			"body": "fun ${1:name}(${2:name}: ${3:type}) {\n\t$0\n}"
+		},
+		"function return declaration": {
+			"prefix": "funr",
+			"body": "fun ${1:name}(${2:name}: ${3:type}): ${4:type} {\n\t$0\n}"
+		},
+		"if statement": {
+			"prefix": "if",
+			"body": "if (${1:condition}) {\n\t$0\n}"
+		},
+		"if else statement": {
+			"prefix": "ife",
+			"body": "if (${1:condition}) {\n\t$2\n} else {\n\t$0\n}"
+		},
+		"while statement": {
+			"prefix": "while",  
+			"body": "while (${1:condition}) {\n\t$0\n}"
+		},
+		"until statement": {
+			"prefix": "until",  
+			"body": "do {\n\t$0\n} until (${1:condition});"
+		},
+		"repeat statement": {
+			"prefix": "repeat",  
+			"body": "repeat(${1:index}) {\n\t$0\n}"
+		},
+		"receive declaration": {
+			"prefix": "rec",
+			"body": "receive(${1:name}) {\n\t$0\n}"
+		},
+		"context declaration": {
+			"prefix": "ctx",
+			"body": "let ctx: Context = context();"
+		},
+		"documentation for function": {
+			"prefix": "doc",
+			"body": "//\n/// @notice What does it do?;\n///\n/// @param name - description;\n/// @return Struct - description;"
+		},
+		"require expression": {
+			"prefix": "req",
+			"body": "require(${1:Bool}, ${2:String});"
+		}
+	}
+}

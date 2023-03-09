@@ -1,0 +1,168 @@
+{
+  "name": "tact-vscode",
+  "displayName": "Tact Language Support for TON blockchain",
+  "description": "Tact language (for .tact file) extension to use together with Tact compiler for Visual Studio Code to develop smart contract for TON blockchain",
+  "publisher": "ton-core",
+  "icon": "icons/logo.png",
+  "version": "0.1.5",
+  "keywords": [
+    "tact",
+    "blockchain",
+    "ton blockchain",
+    "solidity",
+    "ton solidity",
+    "ever solidity",
+    "freeton",
+    "everscale",
+    "ton",
+    "free ton",
+    "ever",
+    "tvm",
+    "compiler",
+    "solium"
+  ],
+  "license": "Apache-2.0",
+  "engines": {
+    "vscode": "^1.50.1"
+  },
+  "activationEvents": [
+    "onLanguage:tact"
+  ],
+  "contributors": [
+    "Steve Korshakov (ex3ndr) <steve@korshakov.com>",
+    "XTON crypto wallet team <askme@xtonwallet.com>"
+  ],
+  "bugs": {
+    "url": "https://github.com/ton-core/vscode-tact/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ton-core/vscode-tact"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Formatters"
+  ],
+  "main": "./out/src/extension",
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "watch": "tsc -watch -p ./",
+    "compile": "tsc -p ./",
+    "rebuildparser": "pegjs --cache -o ./src/parser/build/parser.js ./src/parser/tact.pegjs",
+    "test": "nyc --require ts-node/register --require source-map-support/register mocha test/**/*.spec.ts",
+    "build": "vsce package"
+  },
+  "dependencies": {
+    "ajv": "^6.10.2",
+    "ajv-keywords": "^3.4.1",
+    "ast-parents": "0.0.1",
+    "cosmiconfig": "^7.0.1",
+    "emoji-regex": "^9.2.2",
+    "eol": "^0.9.1",
+    "escape-string-regexp": "^4.0.0",
+    "find-cache-dir": "^2.1.0",
+    "fs-extra": "^4.0.3",
+    "ignore": "^5.1.8",
+    "js-string-escape": "^1.0.1",
+    "lodash": "^4.17.21",
+    "mkdirp": "^2.1.3",
+    "path-normalize": "^6.0.10",
+    "pegjs": "^0.10.0",
+    "require-from-string": "^2.0.2",
+    "rimraf": "^4.1.2",
+    "semver": "^7.3.5",
+    "string-width": "^4.2.2",
+    "ton": "^13.1.0",
+    "ton-core": "^0.47.1",
+    "ton-crypto": "^3.2.0",
+    "ton-emulator": "^2.1.1",
+    "ton-tact": "^0.8.11",
+    "tvm-disassembler": "^2.0.0",
+    "vsce": "^1.103.1",
+    "vscode-languageclient": "^7.0.0",
+    "vscode-languageserver": "^7.0.0",
+    "vscode-languageserver-textdocument": "^1.0.8",
+    "vscode-uri": "2.1.2",
+    "yaml-js": "0.2.3"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.4",
+    "@types/jest": "^29.2.3",
+    "@types/js-yaml": "^4.0.5",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^11.15.3",
+    "@types/pegjs": "^0.10.3",
+    "@types/vscode": "^1.50.1",
+    "concurrently": "^7.6.0",
+    "esbuild": "^0.12.28",
+    "js-yaml": "^4.1.0",
+    "shiki": "^0.14.0",
+    "ts-node": "^10.9.1",
+    "tslint": "^5.20.1",
+    "typescript": "^4.9.3",
+    "vscode-test": "^1.6.1"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "out",
+      "dist"
+    ],
+    "all": true
+  },
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Tact configuration",
+      "properties": {
+        "tact.enabledAsYouTypeCompilationErrorCheck": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enables as you type compilation of the document and error highlighting"
+        },
+        "tact.validationDelay": {
+          "type": "number",
+          "default": 1500,
+          "description": "Delay to trigger the validation of the changes of the current document (compilation)"
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "tact",
+        "aliases": [
+          "Tact",
+          "tact"
+        ],
+        "extensions": [
+          ".tact"
+        ],
+        "configuration": "./tact.configuration.json",
+        "icon": {
+          "light": "icons/icon-light.svg",
+          "dark": "icons/icon-dark.svg"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "tact",
+        "path": "./snippets/tact.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "tact",
+        "scopeName": "source.tact",
+        "path": "./syntaxes/tact.json"
+      }
+    ]
+  }
+}
