@@ -41,7 +41,7 @@ If hover on a variable with some Tact functions that pop up with the information
 
 ## Contributing / Issues / Requests
 
-For ideas, issues, additions, modifications please raise an issue or a pull request at https://github.com/ton-core/vscode-tact
+For ideas, issues, additions, modifications please raise an issue or a pull request at https://github.com/tact-lang/tact-vscode
 
 # Requested features
 
