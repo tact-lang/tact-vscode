@@ -4,7 +4,7 @@
   "description": "Tact language (for .tact file) extension to use together with Tact compiler for Visual Studio Code to develop smart contract for TON blockchain",
   "publisher": "ton-core",
   "icon": "icons/logo.png",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "keywords": [
     "tact",
     "blockchain",
@@ -44,7 +44,7 @@
     "Snippets",
     "Formatters"
   ],
-  "main": "./out/src/extension",
+  "main": "./out/extension",
   "scripts": {
     "vscode:prepublish": "yarn run compile",
     "watch": "tsc -watch -p ./",
@@ -54,6 +54,7 @@
     "build": "vsce package"
   },
   "dependencies": {
+    "@tact-lang/compiler": "^1.1.0-beta.0",
     "ajv": "^6.10.2",
     "ajv-keywords": "^3.4.1",
     "ast-parents": "0.0.1",

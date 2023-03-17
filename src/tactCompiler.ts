@@ -3,10 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { errorToDiagnostic } from './tactErrorsToDiagnostics';
 import { ContractCollection } from './model/contractsCollection';
-import { CompilerContext } from './../tact/src/context';
-import { precompile } from './../tact/src/pipeline/precompile';
-import files from "./../tact/src/imports/stdlib";
-import { createVirtualFileSystem } from "./../tact/src/main";
+import { check, createVirtualFileSystem, CheckResult, CheckResultItem } from '@tact-lang/compiler';
 export class TactCompiler {
 
     public rootPath: string;
@@ -23,58 +20,53 @@ export class TactCompiler {
         file: string,
         sources: any,
         outputDir?: string,
-    }): Promise<String> {
-        let errors = [];
+    }): Promise<CheckResult> {
         const ext = path.extname(args.file);
         if (ext !== ".tact") {
-            errors[0] = 'Choose Tact source file (.tact).';
-            return "";
+            return {
+                ok: false,
+                messages: [{
+                    type: 'error',
+                    message: 'Choose Tact source file (.tact).',
+                    location: {
+                        file: args.file,
+                        line: 0,
+                        column: 0,
+                        length: 0
+                    }
+                }]
+            };
         }
 
-        try {
-            let ctx = new CompilerContext({ shared: {} });
-            const pathKey = path.relative( this.rootPath, args.file).replaceAll('\\','/');
-            const pathContent = fs.readFileSync(pathKey);
-            const fsObject = {} as any;
-                  fsObject[pathKey] = pathContent.toString('base64');
-                for (let pathKey in args.sources) {
-                    fsObject[path.relative( this.rootPath, pathKey).replaceAll('\\','/')] = Buffer.from(args.sources[pathKey].content).toString('base64');
-                }
-                ctx = precompile(ctx, 
-                                createVirtualFileSystem(path.resolve(this.rootPath).replaceAll('\\','/'), fsObject), createVirtualFileSystem('@stdlib', files),
-                                path.relative( this.rootPath, args.file).replaceAll('\\','/')
-                                );
-        } catch(e: any) {
-            return `${args.file}\n${e.message}`;
-        }
-
-        return "";
+        const pathKey = path.relative( this.rootPath, args.file).replaceAll('\\','/');
+        const pathContent = fs.readFileSync(pathKey);
+        const fsObject = {} as any;
+                fsObject[pathKey] = pathContent.toString('base64');
+            for (let pathKey in args.sources) {
+                fsObject[path.relative( this.rootPath, pathKey).replaceAll('\\','/')] = Buffer.from(args.sources[pathKey].content).toString('base64');
+            }
+        const result: CheckResult = check({ project: createVirtualFileSystem(path.resolve(this.rootPath).replaceAll('\\','/'), fsObject),
+                                            entrypoint: path.relative( this.rootPath, args.file).replaceAll('\\','/')
+                                            });
+        return result;
     }
 
     public async compile(contracts: any): Promise<any> {
-        let rawErrors = [];
+        let rawErrors: CheckResultItem[] = [];
 
         for (let fileNameId in contracts.sources) {
-            rawErrors.push(await this.runCompilation({"file": fileNameId, "sources": contracts.sources}));
+            const result = await this.runCompilation({"file": fileNameId, "sources": contracts.sources});
+            if (!result.ok) {
+                rawErrors = rawErrors.concat(result.messages);
+            }
         }
         return this.parseErrors(rawErrors);
     }
 
-    private parseErrors(rawErrors: String[]) {
+    private parseErrors(rawErrors: any[]) {
         let outputErrors: any = [];
         for (let i in rawErrors) {
-            let error = rawErrors[i].split("\n");
-            if (error.length == 1) continue;
-            // we check all imported files, but an error must be shown only for the files that contains them initially
-            if (error[1].indexOf(error[0]) == -1) continue;
-            if (error.length == 2) {
-                outputErrors.push({"severity": "Error", "message": error[error.length-1], "file": error[0], "length": 2, "line": 1, "column": 1});
-            } else {
-                const match = Array.from(error[2].matchAll(/Line ([0-9]*), col ([0-9]*):/g)); //place
-                let matchErrorLength = error[5].match(/\^(~*)/);
-                let message = [error[1]].concat(error.slice(3, error.length-1)).join("\n");
-                outputErrors.push({"severity": "Error", "message": message, "file": error[0], "length": matchErrorLength != null ? matchErrorLength[1].length : 2, "line": match[0][1], "column": match[0][2]});
-            }
+            outputErrors.push({"severity": "Error", "message": rawErrors[i].message, "file": rawErrors[i].location.file, "length": rawErrors[i].location.length == 0 ? 2 : rawErrors[i].location.length, "line": rawErrors[i].location.line, "column": rawErrors[i].location.column});
         }
         return outputErrors;
     }
@@ -101,4 +93,3 @@ export class TactCompiler {
     }
 
 }
-
