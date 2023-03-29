@@ -434,7 +434,7 @@
                     "name": "variable.language.transaction"
                 },
                 {
-                    "match": "\\b(send|SendParameters)\\b",
+                    "match": "\\b(send|SendParameters|emit|reply)\\b",
                     "name": "variable.language.message"
                 },
                 {
@@ -775,7 +775,7 @@
         "declaration-function": {
             "patterns": [
                 {
-                    "begin": "\\b((?:(?:public|get|extends|overwrites|virtual|mutates)|\\s+)*)\\s+(fun|native)\\s+(\\w+)\\b",
+                    "begin": "\\b((?:(?:public|get|extends|overrides|inline|virtual|mutates)|\\s+)*)\\s+(fun|native)\\s+(\\w+)\\b",
                     "beginCaptures": {
                         "1": {
                             "name": "keyword.control.flow"

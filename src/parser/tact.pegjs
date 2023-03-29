@@ -496,7 +496,8 @@ PrimitiveToken     = "primitive"        !IdentifierPart
 TraitToken         = "trait"            !IdentifierPart
 
 GetToken           = "get"              !IdentifierPart
-OverwritesToken    = "overwrites"       !IdentifierPart
+OverridesToken     = "overrides"        !IdentifierPart
+InlineToken        = "inline"           !IdentifierPart
 VirtualToken       = "virtual"          !IdentifierPart
 
 ExtendsToken       = "extends"          !IdentifierPart
@@ -771,7 +772,7 @@ StateVariableValue
   }
 
 StateVariableDeclaration
-  = __ id:Identifier __ ":" __ type:Type __ "as"? __ typePrimitive:Type? isoptional:"?"? __ value:StateVariableValue? __  EOS  
+  = __ isconst:ConstantToken? __ id:Identifier __ ":" __ type:Type __ "as"? __ typePrimitive:Type? isoptional:"?"? __ value:StateVariableValue? __  EOS  
   {
     return {
       type: "StateVariableDeclaration",
@@ -779,6 +780,7 @@ StateVariableDeclaration
       literal: type,
       value: value,
       is_optional: isoptional != null,
+      is_const: isconst != null,
       typePrimitive: typePrimitive,
       start: location().start.offset,
       end: location().end.offset
@@ -1493,7 +1495,7 @@ FunctionDeclaration
         end: location().end.offset
       };
     }
-  / modifier:((__ GetToken / __ OverwritesToken / __ VirtualToken / __ MutatesToken / __ PublicToken)*)? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations __ body:FunctionBody
+  / modifier:((__ GetToken / __ OverridesToken / __ InlineToken / __ VirtualToken / __ MutatesToken / __ PublicToken)*)? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations __ body:FunctionBody
     {
       return {
         type: "FunctionDeclaration",

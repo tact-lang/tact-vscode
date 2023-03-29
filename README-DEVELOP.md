@@ -27,18 +27,16 @@ which is described in a below [section](#how-to-run-code-in-this-github-reposito
 Clone the repository:
 
 ```console
-$ git clone --recurse-submodules https://github.com/ton-core/vscode-tact
+$ git clone https://github.com/tact-lang/vscode-tact
 Cloning into 'vscode-tact'...
 ...
 $ cd vscode-tact
-$ mkdir ./out/tact
-$ cp ./tact/stdlib ./out/tact
 ```
 
 Install dependent npm packages:
 
 ```console
-$ yarn install
+$ yarn
 ```
 
 ## Running

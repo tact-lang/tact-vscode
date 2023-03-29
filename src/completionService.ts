@@ -772,6 +772,16 @@ export function GetGlobalFunctions(): CompletionItem[] {
             kind: CompletionItemKind.Property,
             label: 'myBalance()',
         },
+        {
+            detail: 'Reply function',
+            kind: CompletionItemKind.Property,
+            label: 'reply()',
+        },
+        {
+            detail: 'Emit function',
+            kind: CompletionItemKind.Property,
+            label: 'emit()',
+        },
     ];
 }
 

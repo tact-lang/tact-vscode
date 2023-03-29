@@ -157,12 +157,13 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.21.tgz#763b05a4b472c93a8db29b2c3e359d55b29ce272"
   integrity sha512-gFukHN4t8K4+wVC+ECqeqwzBDeFeTzBXroBTqE6vcWrQGbEUpHO7LYdG0f4xnvYq4VOEwITSlHlp0JBAIFMS/g==
 
-"@tact-lang/compiler@^1.1.0-beta.0":
-  version "1.1.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@tact-lang/compiler/-/compiler-1.1.0-beta.0.tgz#691648862e3cc94e7e55acf777724f95facede7f"
-  integrity sha512-xTSfx7EhWC1Hel2c6Fzmu4Bekp0HMeyyhRM/VO6lOCqPYwVnF9W2SlVaWr0S5Mtmb30wc2AGScDmOYszvV9RZg==
+"@tact-lang/compiler@^1.1.0-beta.7":
+  version "1.1.0-beta.7"
+  resolved "https://registry.yarnpkg.com/@tact-lang/compiler/-/compiler-1.1.0-beta.7.tgz#8237f83f6991f6c09b6d309455fe41479264ee82"
+  integrity sha512-ezBDz32gSt/lIa4qhTGCVmfmbaj4P2CD93D/AwcvHb6t49y3lwLw2pstbtIJ60D6UiXf26t3hdTASBx68TYZZw==
   dependencies:
     "@ipld/dag-pb" "2.1.18"
+    "@tact-lang/opcode" "^0.0.12"
     arg "^5.0.2"
     blockstore-core "1.0.5"
     change-case "^4.1.2"
@@ -173,10 +174,14 @@
     path-normalize "^6.0.10"
     prando "^6.0.1"
     qs "^6.11.0"
-    ton-core ">=0.47.1"
+    ton-core ">=0.49.0"
     ton-crypto "^3.2.0"
-    tvm-disassembler "^2.0.0"
     zod "^3.20.2"
+
+"@tact-lang/opcode@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@tact-lang/opcode/-/opcode-0.0.12.tgz#a186dc6ffaac91da39bdbf55dc28bd330be7a26b"
+  integrity sha512-iSLoENXb5KlD15d2XaH8omhSZFlmoF/uRMpblggnlt9WLxogCDNkMODyNS1EijhkhzBlAzXZIByFvWTLZda3bQ==
 
 "@tootallnate/once@1":
   version "1.1.2"
@@ -2270,10 +2275,10 @@ ton-core@>=0.44.0:
   dependencies:
     symbol.inspect "1.0.1"
 
-ton-core@>=0.47.1:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/ton-core/-/ton-core-0.48.0.tgz#df744c9b13b3193cb7eb8a9cbb715bcf0437e467"
-  integrity sha512-v3QL0CC8iQQ0cjUN0lI9hK7wEpLW2Wnm+N5Ukm+NSbtQ0vq36LGQR/BRywoOQZJm59XzmW4ATbtCWeas9ePrRA==
+ton-core@>=0.49.0:
+  version "0.49.0"
+  resolved "https://registry.yarnpkg.com/ton-core/-/ton-core-0.49.0.tgz#69d338daa72e33b36aea4fb02cb0c7b3bf2c668b"
+  integrity sha512-t3fhs9rb7JfOccSU966bLSHq5G4PYippaXpQJGZPvUwoNVdlM3/nUwz6S6cr/hsGbthRBzApl4FhJsDlx9r4vA==
   dependencies:
     symbol.inspect "1.0.1"
 
