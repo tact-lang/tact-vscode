@@ -7,18 +7,18 @@ const StructDefinition = {
   {
     const parts = ['struct ', node.name, ' {'];
 
-    if (node.members.length > 0) {
+    if (node.body.length > 0) {
       parts.push(
-        printSeparatedList(path.map(print, 'members'), {
+        printSeparatedList(path.map(print, 'body'), {
           firstSeparator: hardlineWithoutBreakParent,
-          separator: [';'],
-          lastSeparator: [';', hardlineWithoutBreakParent],
+          separator: [hardlineWithoutBreakParent],
+          lastSeparator: [],
           grouped: true
         })
       );
     }
 
-    parts.push('}');
+    parts.push([hardlineWithoutBreakParent, '}']);
 
     return parts;
   }

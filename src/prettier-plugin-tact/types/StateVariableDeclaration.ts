@@ -17,10 +17,10 @@ const StateVariableDeclaration = {
   print: ({ node, path, print }: any) => //JSON.stringify(node)
   [
     node.is_const ? "const " : "",
-    node.is_optional ? " optional " : "",
     node.name,
     ": ",
     path.call(print, "literal"),
+    node.is_optional ? "?" : "",
     (node.typePrimitive != null ? " as " + path.call(print, "typePrimitive") : ""),
     initialValue(node, path, print),
     ';'

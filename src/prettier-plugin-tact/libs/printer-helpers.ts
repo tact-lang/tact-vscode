@@ -41,17 +41,14 @@ function printPreservingEmptyLines(path: any, key: any, options: any, print: any
 
     if (
       // Avoid adding a hardline at the beginning of the document.
-      parts.length !== 0 &&
-      // LabelDefinition adds a dedented line so we don't have to prepend a
-      // hardline.
-      nodeType !== 'LabelDefinition'
+      parts.length !== 0
     ) {
       parts.push(hardline);
     }
 
     if (index > 0) {
       if (
-        ['ContractDefinition', 'FunctionDefinition'].includes(nodeType) &&
+        ['ContractStatement', 'FunctionDeclaration', 'ReceiveDeclaration', 'OnBounceDeclaration'].includes(nodeType) &&
         parts[parts.length - 2] !== hardline
       ) {
         parts.push(hardline);
@@ -65,7 +62,7 @@ function printPreservingEmptyLines(path: any, key: any, options: any, print: any
         options.originalText,
         options.locEnd(node) + 1
       ) ||
-      nodeType === 'FunctionDefinition'
+      (nodeType === 'FunctionDeclaration' || nodeType === 'ReceiveDeclaration' || nodeType === 'OnBounceDeclaration')
     ) {
       parts.push(hardline);
     }

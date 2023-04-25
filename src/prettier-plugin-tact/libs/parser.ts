@@ -1,17 +1,20 @@
 // @ts-nocheck
-import * as _TactParser from "../../parser/build/parser";
+import {Parser} from "../../parser/tact";
 
-type TactParser = {
-    parse: (input: string) => {};
+const _TactParser = new Parser();
+
+const TactParser = {
+    parse: (input: string, options: any) => {
+        return _TactParser.parseFormatter(input, options);
+    },
     SyntaxError: (
         message: string,
         expected: string,
         found: unknown,
         location: unknown
-    ) => unknown;
+    ) => {}
 };
 
-const TactParser = _TactParser as TactParser;
 const parse = TactParser.parse;
 
 export { TactParser, parse };

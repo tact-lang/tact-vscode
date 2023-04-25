@@ -1,6 +1,6 @@
 const RevertStatement = {
   print: ({ path, print }: any) => //JSON.stringify(path)
-  ['revert ', path.call(print, 'revertCall'), ';']
+  ['repeat ', path.call(print, 'repeat'), ';']
 };
 
 export default RevertStatement;

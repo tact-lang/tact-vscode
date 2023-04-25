@@ -1,5 +1,5 @@
 const ThrowStatement = {
-  print: () => 'throw;'
+  print: () => 'throw '
 };
 
 export default ThrowStatement;

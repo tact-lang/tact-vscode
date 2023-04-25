@@ -15,6 +15,11 @@ export class Parser {
         }
     }
 
+    public parseFormatter(input:string, opt: any) {
+        let out = this.parse(input, "", false, {comment: true});
+        return out;
+    }
+
     public parse (source:string,  contractPath:string, _rebuild?:boolean, options?:any) {
         const rebuild = _rebuild ? _rebuild: false;
         
@@ -47,13 +52,13 @@ export class Parser {
 
         // eslint-disable-next-line no-cond-assign
         while (nextComment = commentParser.exec(sourceCode)) {
-            const text = nextComment[0], types: any = { "//": "Line", "/*": "Block" };
+            const raw = nextComment[0], types: any = { "//": "CommentLine", "/*": "CommentBlock" };
 
             comments.push({
-                text,
-                type: types[text.slice(0, 2)],
+                value: (raw.slice(0, 2) == "//" ? raw.substring(2) : raw.substring(2, raw.length-2)),
+                type: types[raw.slice(0, 2)],
                 start: nextComment.index,
-                end: nextComment.index + text.length
+                end: nextComment.index + raw.length
             });
         }
 

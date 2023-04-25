@@ -137,21 +137,18 @@ export const parsers = {
     "tact-parser": {
         parse,
         astFormat: "tact-ast",
-        locStart: (node: any) =>
-            (node.loc || { start: { offset: 0 } }).start.offset,
-        locEnd: (node: any) =>
-            (node.loc || { end: { offset: 0 } }).end.offset,
+        locStart: (node: any) => node.start,
+        locEnd: (node: any) => node.end,
     },
 };
 
 export const printers = {
     "tact-ast": {
         print: genericPrint,
-        //embed,
         canAttachComment: (node: any) =>
-            node && node.type && node.type !== "comment",
+            node && node.type && node.type !== "CommentLine" && node.type !== "CommentBlock",
         isBlockComment: (node: any) =>
-            node && node.type === "comment" && node.multiline === true,
+            node && node.type === "CommentBlock",
         printComment: printComment,
         handleComments: {
             ownLine: handleOwnLineComment,
@@ -168,11 +165,6 @@ export const options = {
         default: "babel-ts",
         description: "The parser to use for the content of Tact actions",
     },
-};
-
-export const defaultOptions = {
-    tabWidth: 2,
-    actionParser: "babel-ts",
 };
 
 export default { languages, parsers, printers, options };

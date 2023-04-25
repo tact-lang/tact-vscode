@@ -7,12 +7,12 @@ function isIndentableBlockComment(comment: any) {
   // we can fix the indentation of each line. The stars in the `/*` and
   // `*/` delimiters are not included in the comment value, so add them
   // back first.
-  const lines = `*${comment.raw}*`.split('\n');
+  const lines = `*${comment.value}*`.split('\n');
   return lines.length > 1 && lines.every((line) => line.trim()[0] === '*');
 }
 
 function printIndentableBlockComment(comment: any) {
-  const lines = comment.raw.split('\n');
+  const lines = comment.value.split('\n');
 
   return [
     '/*',
@@ -32,7 +32,7 @@ function printComment(commentPath: any, options: any) {
   const comment = commentPath.getValue();
 
   switch (comment.type) {
-    case 'BlockComment': {
+    case 'CommentBlock': {
       if (isIndentableBlockComment(comment)) {
         const printed = printIndentableBlockComment(comment);
         // We need to prevent an edge case of a previous trailing comment
@@ -49,10 +49,10 @@ function printComment(commentPath: any, options: any) {
         return printed;
       }
 
-      return `/*${comment.raw}*/`;
+      return `/*${comment.value}*/`;
     }
-    case 'LineComment':
-      return `//${comment.raw.trimEnd()}`;
+    case 'CommentLine':
+      return `//${comment.value.trimEnd()}`;
     default:
       throw new Error(`Not a comment: ${JSON.stringify(comment)}`);
   }

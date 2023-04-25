@@ -6,6 +6,23 @@ import {  printComments,
           printSeparatedItem,
           printSeparatedList } from '../libs/printer-helpers';
 
+const interfaceId = (node: any, path: any, print: any) => {
+  let out = node.id_Interface && node.id_Interface.length > 0
+    ? [
+        '@interface',
+        '(',
+        '"',
+        node.id_Interface.map((item: any) => {
+          return item == "." ? "." : item.name;
+        }),
+        '"',
+        ')',
+        hardline
+      ]
+    : "";
+  return out;
+}
+
 const inheritance = (node: any, path: any, print: any) =>
   node.is.length > 0
     ? [
@@ -30,6 +47,7 @@ const body = (node: any, path: any, options: any, print: any) =>
 const ContractStatement = {
   print: ({ node, options, path, print }: any) => [
     group([
+      interfaceId(node, path, print),
       'contract ', 
       node.name,
       inheritance(node, path, print),

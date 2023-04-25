@@ -591,7 +591,8 @@ MemberExpression
           return {
             type: "NewExpression",
             callee: callee,
-            arguments: args,
+            arguments: args != null ? args[0]: null,
+            argumentsType: args != null ? args[1]: null,
             start: location().start.offset,
             end: location().end.offset
           };
@@ -600,7 +601,8 @@ MemberExpression
           return {
             type: "InitOfExpression",
             callee: callee,
-            arguments: args,
+            arguments: args != null ? args[0]: null,
+            argumentsType: args != null ? args[1]: null,
             start: location().start.offset,
             end: location().end.offset
           };
@@ -647,12 +649,12 @@ InitOfExpression
 CallExpression
   = head:(
       callee:MemberExpression __ args:Arguments {
-        return { type: "CallExpression", callee: callee, arguments: args, start: location().start.offset, end: location().end.offset };
+        return { type: "CallExpression", callee: callee, arguments: args != null ? args[0]: null, argumentsType: args != null ? args[1]: null, start: location().start.offset, end: location().end.offset };
       }
     )
     tail:(
         __ args:Arguments {
-          return { type: "CallExpression", arguments: args, start: location().start.offset, end: location().end.offset };
+          return { type: "CallExpression", arguments: args != null ? args[0]: null, argumentsType: args != null ? args[1]: null, start: location().start.offset, end: location().end.offset };
         }
       / __ "[" __ property:Expression __ "]" {
           return {
@@ -683,13 +685,13 @@ CallExpression
 
 Arguments
   = "(" __ args:(ArgumentList __)? ")" {
-      return optionalList(extractOptional(args, 0));
+      return [optionalList(extractOptional(args, 0)), 0];
     }
   / "(" __ "{" __ args:(NameValueList (__ ",")? )? __ "}" __ ")" {
-      return optionalList(extractOptional(args, 0));
+      return [optionalList(extractOptional(args, 0)), 1];
     }
   /  "{" __ args:(NameValueList (__ ",")? )? __ "}" {
-    return optionalList(extractOptional(args, 0));
+    return [optionalList(extractOptional(args, 0)), 2];
   }
 
 ArgumentList
@@ -1382,7 +1384,7 @@ ReturnStatement
       return { type: "ReturnStatement", argument: null, start: location().start.offset, end: location().end.offset };
     }
   / ReturnToken __ agrModificator:Arguments? __ argument:Expression EOS {
-      return { type: "ReturnStatement", argument: argument, agrModificator: agrModificator, start: location().start.offset, end: location().end.offset };
+      return { type: "ReturnStatement", argument: argument, agrModificator: agrModificator != null ? agrModificator[0]: null, agrModificatorType: agrModificator != null ? agrModificator[1]: null, start: location().start.offset, end: location().end.offset };
     }
 
 ThrowStatement
