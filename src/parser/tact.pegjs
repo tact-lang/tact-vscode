@@ -1116,18 +1116,20 @@ StatementList
   = head:Statement tail:(__ Statement)* { return buildList(head, tail, 1); }
 
 VariableStatement
-  = (LetToken / ConstantToken) __ declarations:VariableDeclarationList EOS {
+  = vartype:(LetToken / ConstantToken) __ declarations:VariableDeclarationList EOS {
       return {
         type:         "VariableDeclaration",
         declarations: declarations,
+        var_type: vartype[0],
         start: location().start.offset,
         end: location().end.offset
       };
     }
-    / (LetToken / ConstantToken) __ tuple:VariableDeclarationTuple EOS {
+    / vartype:(LetToken / ConstantToken) __ tuple:VariableDeclarationTuple EOS {
       return {
         type:         "VariableDeclarationTuple",
         declarations: tuple.declarations,
+        var_type: vartype[0],
         init: tuple.init,
         start: location().start.offset,
         end: location().end.offset

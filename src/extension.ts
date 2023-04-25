@@ -8,8 +8,12 @@ import {
 // tslint:disable-next-line:no-duplicate-imports
 import {
     workspace, ExtensionContext, DiagnosticCollection,
-    languages
+    languages, TextDocument, 
+    FormattingOptions, CancellationToken,
+    ProviderResult, TextEdit
 } from 'vscode';
+
+import { formatDocument } from './formatter';
 
 let diagnosticCollection: DiagnosticCollection;
 let clientDisposable: LanguageClient;
@@ -19,7 +23,14 @@ export async function activate(context: ExtensionContext) {
     diagnosticCollection = languages.createDiagnosticCollection('tact');
 
     context.subscriptions.push(diagnosticCollection);
-    
+
+    context.subscriptions.push(
+        languages.registerDocumentFormattingEditProvider('tact', {
+            provideDocumentFormattingEdits(document: TextDocument, options: FormattingOptions, token: CancellationToken): ProviderResult<TextEdit[]> {
+                return Promise.resolve(formatDocument(document, context));
+            },
+    }));
+
     const serverModule = path.join(__dirname, './server.js');
 
     const serverOptions: ServerOptions = {

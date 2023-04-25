@@ -838,18 +838,20 @@ function peg$parse(input, options) {
             };
           },
       peg$c378 = function(head, tail) { return buildList(head, tail, 1); },
-      peg$c379 = function(declarations) {
+      peg$c379 = function(vartype, declarations) {
             return {
               type:         "VariableDeclaration",
               declarations: declarations,
+              var_type: vartype[0],
               start: location().start.offset,
               end: location().end.offset
             };
           },
-      peg$c380 = function(tuple) {
+      peg$c380 = function(vartype, tuple) {
             return {
               type:         "VariableDeclarationTuple",
               declarations: tuple.declarations,
+              var_type: vartype[0],
               init: tuple.init,
               start: location().start.offset,
               end: location().end.offset
@@ -13088,7 +13090,7 @@ function peg$parse(input, options) {
           s4 = peg$parseEOS();
           if (s4 !== peg$FAILED) {
             peg$savedPos = s0;
-            s1 = peg$c379(s3);
+            s1 = peg$c379(s1, s3);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -13120,7 +13122,7 @@ function peg$parse(input, options) {
             s4 = peg$parseEOS();
             if (s4 !== peg$FAILED) {
               peg$savedPos = s0;
-              s1 = peg$c380(s3);
+              s1 = peg$c380(s1, s3);
               s0 = s1;
             } else {
               peg$currPos = s0;
