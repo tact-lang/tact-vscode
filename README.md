@@ -15,6 +15,7 @@ This extension provides:
 * Additional information by hover event
 * Code completion for all variables, functions, global parameters and unique types for tact
 * Code completion for all contracts / libraries in the current file and all referenced imports
+* Formatting
 
 # Instructions
 
@@ -39,6 +40,11 @@ If hover on a variable with some Tact functions that pop up with the information
 
 ![Screenshot hover event Tact vscode extension](images/hover.gif)
 
+## Formatting
+
+To apply the formatting you can use the right-click context menu.
+![Screenshot formatting Tact vscode extension](images/formatting.gif)
+
 ## Contributing / Issues / Requests
 
 For ideas, issues, additions, modifications please raise an issue or a pull request at https://github.com/tact-lang/tact-vscode
@@ -46,9 +52,9 @@ For ideas, issues, additions, modifications please raise an issue or a pull requ
 # Requested features
 
 - [x] Show hovers
-- [ ] Formatter
-- [ ] Auto compilation
-- [ ] Help with function and method signatures
+- [x] Formatter
+- [x] Auto compilation
+- [x] Help with function and method signatures
 - [ ] Possible actions on errors or warnings
 - [ ] Incrementally format code as the user types
 - [ ] Linter
