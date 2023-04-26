@@ -1,25 +1,17 @@
 {
-  "name": "tact-vscode",
+  "name": "tact-lang-vscode",
   "displayName": "Tact Language Support for TON blockchain",
   "description": "Tact language (for .tact file) extension to use together with Tact compiler for Visual Studio Code to develop smart contract for TON blockchain",
   "publisher": "KonVik",
   "icon": "icons/logo.png",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "keywords": [
     "tact",
     "blockchain",
     "ton blockchain",
-    "solidity",
-    "ton solidity",
-    "ever solidity",
-    "freeton",
-    "everscale",
     "ton",
-    "free ton",
-    "ever",
     "tvm",
-    "compiler",
-    "solium"
+    "compiler"
   ],
   "license": "Apache-2.0",
   "engines": {
@@ -33,11 +25,11 @@
     "XTON crypto wallet team <askme@xtonwallet.com>"
   ],
   "bugs": {
-    "url": "https://github.com/tact-lang/vscode-tact/issues"
+    "url": "https://github.com/tact-lang/tact-vscode/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tact-lang/vscode-tact"
+    "url": "https://github.com/tact-lang/tact-vscode"
   },
   "categories": [
     "Programming Languages",
