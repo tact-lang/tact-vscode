@@ -29,11 +29,11 @@ export function errorToDiagnostic(error: any): CompilerError {
             range: {
                 end: {
                     character: Number(error.column).valueOf() + Number(error.length).valueOf() - 1,
-                    line: Number(error.line).valueOf() - 1,
+                    line: error.line != 0 ? Number(error.line).valueOf() - 1: 0,
                 },
                 start: {
-                    character: Number(error.column).valueOf() - 1,
-                    line: Number(error.line).valueOf() - 1,
+                    character: error.column != 0 ? Number(error.column).valueOf() - 1: 0,
+                    line: error.line != 0 ? Number(error.line).valueOf() - 1: 0,
                 },
             },
             severity: severity,

@@ -1,19 +1,19 @@
 'use strict';
-import * as path from 'path';
 import {
-    createConnection, Connection,
-    TextDocuments, InitializeResult, Hover,
-    ProposedFeatures,
-    Files, Diagnostic, TextDocumentPositionParams,
-    CompletionItem, Location,
+    createConnection, Connection, WorkspaceChange, 
+    CodeActionKind, CodeActionParams,
+    CodeAction, TextDocuments, InitializeResult, 
+    Hover, ProposedFeatures, Files, Diagnostic,
+    TextDocumentPositionParams, CompletionItem, Location,
     TextDocumentSyncKind, HoverParams, MarkupContent
 } from 'vscode-languageserver/node';
-import { DiagnosticSeverity, PublishDiagnosticsParams } from 'vscode-languageserver';;
+import { DiagnosticSeverity } from 'vscode-languageserver';;
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { CompilerError } from './tactErrorsToDiagnostics';
 import { CompletionService } from './completionService';
 import { TactDefinitionProvider } from './definitionProvider';
 import { HoverService } from './hoverService';
+import { RefactorService } from './refactorService';
 import { TactCompiler } from './tactCompiler';
 import { URI } from 'vscode-uri';
 
@@ -30,7 +30,6 @@ interface TactSettings {
     validationDelay: number;
 }
 
-// import * as path from 'path';
 // Create a connection for the server
 const connection: Connection = createConnection(ProposedFeatures.all);
 
@@ -97,9 +96,7 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Comp
 
 connection.onHover((textPosition: HoverParams): Hover => {
     const hoverService = new HoverService(rootPath);
-    const suggestion = hoverService.getHoverItems(
-        documents.get(textPosition.textDocument.uri),
-        textPosition.position);
+    const suggestion = hoverService.getHoverItems(documents.get(textPosition.textDocument.uri), textPosition.position);
     //console.log(JSON.stringify(suggestion));
     let doc: MarkupContent = suggestion
     return {
@@ -212,6 +209,11 @@ connection.onInitialize((result): InitializeResult => {
             },
             hoverProvider: true,
             definitionProvider: true,
+            renameProvider: true,
+            codeActionProvider: {
+                resolveProvider: true
+            },
+            documentFormattingProvider: true,
             textDocumentSync: TextDocumentSyncKind.Full,
         },
     };
@@ -227,6 +229,28 @@ connection.onDidChangeConfiguration((change) => {
     validationDelay = settings.tact.validationDelay;
 
     startValidation();
+});
+
+connection.onCodeAction((params: CodeActionParams): CodeAction[] | undefined => {
+    const codeAction: CodeAction = {
+        title: 'Dump this',
+        kind: CodeActionKind.Refactor,
+        data: params.textDocument.uri
+    };
+
+    let provider = new RefactorService(rootPath);
+    
+    const change: WorkspaceChange = new WorkspaceChange();
+
+    codeAction.edit = provider.dump(documents.get(params.textDocument.uri) as TextDocument, params.range);
+    return [
+        codeAction
+    ];
+});
+
+connection.onRenameRequest((params) => {
+    let provider = new RefactorService(rootPath);
+    return provider.rename(documents.get(params.textDocument.uri) as TextDocument, params.position, params.newName);
 });
 
 // Make the text document manager listen on the connection

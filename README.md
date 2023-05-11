@@ -45,6 +45,11 @@ If hover on a variable with some Tact functions that pop up with the information
 To apply the formatting you can use the right-click context menu.
 ![Screenshot formatting Tact vscode extension](images/formatting.gif)
 
+## Refactor
+
+To rename some string in the Tact code use `F2`, to use the code actions, open the right-click context menu and select "refactor". 
+![Screenshot refactor Tact vscode extension](images/refactor.gif)
+
 ## Contributing / Issues / Requests
 
 For ideas, issues, additions, modifications please raise an issue or a pull request at https://github.com/tact-lang/tact-vscode

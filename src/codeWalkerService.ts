@@ -55,8 +55,6 @@ export class Contract2 extends ParsedCode {
     public structs: Struct[] = [];
     public messages: Message[] = [];
     public contractType: string | undefined;
-    public constructorFunction: Function = new Function();
-    public receiveFunction: Function = new Function();
     public extendsContracts: Contract2[] = [];
     public extendsContractNames: string[] = [];
 
@@ -80,16 +78,6 @@ export class Contract2 extends ParsedCode {
         }
     }
 
-    public isConstructorSelected(offset:number) {
-        let element = this.constructorFunction.element;
-        return this.isElementedSelected(element, offset);
-    }
-
-    public isReceivableSelected(offset:number) {
-        let element = this.receiveFunction.element;
-        return this.isElementedSelected(element, offset);
-    }
-
     public getSelectedFunction(offset:number) {
         let selectedFunction =  this.functions.find(x => {
             let element = x.element;
@@ -101,15 +89,6 @@ export class Contract2 extends ParsedCode {
             return false;
         });
 
-        if (selectedFunction === undefined) { //nothing
-            if (this.isConstructorSelected(offset)) {
-                selectedFunction = this.constructorFunction;
-            } else {    
-                if (this.isReceivableSelected(offset)) {
-                    selectedFunction = this.receiveFunction;
-                }
-            }
-        }
         return selectedFunction;
     }
 
@@ -160,23 +139,25 @@ export class Contract2 extends ParsedCode {
                 if (contractElement.type === 'FunctionDeclaration') {
                     const functionContract = new Function();
                     functionContract.initialise(contractElement, this);
-                    if (functionContract.name === functionContract.contract?.name) {
-                        this.constructorFunction = functionContract;
-                    } else {
-                        this.functions.push(functionContract);
-                    }
+                    this.functions.push(functionContract);
                 }
 
-                if (contractElement.type === 'ConstructorDeclaration') {
+                if (contractElement.type === 'InitDeclaration') {
                     const functionContract = new Function();
                     functionContract.initialise(contractElement, this);
-                    this.constructorFunction = functionContract;
+                    this.functions.push(functionContract);
                 }
 
                 if (contractElement.type === 'ReceiveDeclaration') {
                     const functionContract = new Function();
                     functionContract.initialise(contractElement, this);
-                    this.receiveFunction = functionContract;
+                    this.functions.push(functionContract);
+                }
+
+                if (contractElement.type === 'OnBounceDeclaration') {
+                    const functionContract = new Function();
+                    functionContract.initialise(contractElement, this);
+                    this.functions.push(functionContract);
                 }
 
                 if (contractElement.type === 'StateVariableDeclaration') {

@@ -10,7 +10,8 @@ import {
     workspace, ExtensionContext, DiagnosticCollection,
     languages, TextDocument, 
     FormattingOptions, CancellationToken,
-    ProviderResult, TextEdit
+    ProviderResult, TextEdit,
+    DocumentSelector
 } from 'vscode';
 
 import { formatDocument } from './formatter';
@@ -30,6 +31,10 @@ export async function activate(context: ExtensionContext) {
                 return Promise.resolve(formatDocument(document, context));
             },
     }));
+
+    const documentSelector: DocumentSelector = {
+        language: 'csharp',
+    };
 
     const serverModule = path.join(__dirname, './server.js');
 

@@ -286,7 +286,7 @@ export class CompletionService {
         }
         
         let found = false;
-        
+
         if (autocompleteByDot.isVariable) {
             allVariables.forEach(item => {
                 if (item.name === autocompleteByDot.name && !found) {
@@ -844,7 +844,7 @@ function getAutocompleteTriggerByDotVariableName(lineText: string, wordEndPositi
         result.isVariable = true;
     }
 
-    while(searching && wordEndPosition >= 0) {
+    while (searching && wordEndPosition >= 0) {
         let currentChar = lineText[wordEndPosition];
         if (isAlphaNumeric(currentChar) || currentChar === '_' || currentChar === '$') {
             result.name = currentChar + result.name;
@@ -863,6 +863,7 @@ function getAutocompleteTriggerByDotVariableName(lineText: string, wordEndPositi
             return result;
         }
     }
+
     return result;
 }
 
