@@ -31,7 +31,8 @@ export class RefactorService {
             let pos = -1;
             while (lines[i].length > pos + 1) {
                 pos = lines[i].indexOf(findWord, pos);
-                if (pos != -1) {
+                const localWordObject = this.getWord(lines[i], pos+1);
+                if (pos != -1 && localWordObject.word == findWord) {
                     workspaceEdit.getTextEditChange(document.uri).replace(Range.create(Position.create(i, pos), Position.create(i, pos + wordObject.word.length)), newValue);
                     pos++;
                 } else {
@@ -47,17 +48,21 @@ export class RefactorService {
         if (document == undefined) {
             return;
         }
+        const lines = document.getText().split(/\r?\n/g);
+        const wordLine = lines[range.start.line];
+
+        const wordObject = this.getWord(wordLine, range.start.character-1, [" ", "(", ")", "[", "]", ";", ",", "!", "+", "-", "*", ":", "{", "=", "&", "^", "%", "~"]);
+
         const workspaceEdit = new WorkspaceChange();
-        workspaceEdit.getTextEditChange(document.uri).replace(range, `dump(${document.getText(range)})`);
+        workspaceEdit.getTextEditChange(document.uri).insert(Position.create(range.start.line+1, 0), `dump(${wordObject.word});\n`);
         return workspaceEdit.edit;
     }
 
-    private getWord(lineText: string, charecterPosition: number): any {
+    private getWord(lineText: string, charecterPosition: number, stopCharacters = [" ", "(", ")", "[", "]", ";", ",", "!", "+", "-", "*", ":", ".", "{", "=", "&", "^", "%", "~"]): any {
         let offsetStart = charecterPosition;
         let offsetEnd = charecterPosition;
         let wordStart = charecterPosition;
         let wordEnd = charecterPosition;
-        const stopCharacters = [" ", "(", ")", "[", "]", ";", "!", "+", "-", "*", ":", ".", "{", "=", "&", "^", "%", "~"];
         while (offsetStart >= -1) {
             wordStart = offsetStart;
             if (stopCharacters.includes(lineText[offsetStart])) {

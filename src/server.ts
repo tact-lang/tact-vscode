@@ -240,8 +240,6 @@ connection.onCodeAction((params: CodeActionParams): CodeAction[] | undefined => 
 
     let provider = new RefactorService(rootPath);
     
-    const change: WorkspaceChange = new WorkspaceChange();
-
     codeAction.edit = provider.dump(documents.get(params.textDocument.uri) as TextDocument, params.range);
     return [
         codeAction

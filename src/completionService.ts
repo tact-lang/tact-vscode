@@ -196,7 +196,7 @@ export class CompletionService {
                             if (autocompleteByDot.name === 'self' && autocompleteByDot.isVariable && autocompleteByDot.parentAutocomplete === undefined) {
                                 //add selected contract completion items
                                 this.addContractCompletionItems(selectedContract, completionItems);
-                            } else  {
+                            }  else {
                                 /// the types 
                                 let topParent = autocompleteByDot.getTopParent();
                                 if (topParent.name === "self") {
@@ -309,20 +309,55 @@ export class CompletionService {
         }
 
         if (autocompleteByDot.isMethod) {
-            allfunctions.forEach(item => {
-                if (item.name === autocompleteByDot.name) {
-                    found = true;
-                    if (item.output.length === 1) {
-                        //todo return array
-                        let type = item.output[0].type;
-                        if(autocompleteByDot.childAutocomplete !== undefined) {
-                            this.findDotType(allStructs, allMessages, type, autocompleteByDot.childAutocomplete, completionItems, allContracts, currentContract);
-                        } else {
-                            this.findDotTypeCompletion(allStructs, allMessages, type, completionItems, allContracts, currentContract);
+            let items: CompletionItem[] = [];
+            switch (CascadeAssociativeArray[autocompleteByDot.name]) {
+                case "Slice":
+                    items = getSliceCompletionItems();
+                    break;
+                case "Cell":
+                    items = getCellCompletionItems();
+                    break;
+                case "Builder":
+                    items = getBuilderCompletionItems();
+                    break;
+                case "String":
+                    items = getStringCompletionItems();
+                    break;
+                case "Context":
+                    items = getContextCompletionItems();
+                    break;
+                case "Int":
+                    items = getIntCompletionItems();
+                    break;
+                case "StringBuilder":
+                    items = getStringBuilderCompletionItems();
+                    break;
+                case "Address":
+                    // no methods now
+                    break;
+                    
+            }
+
+            if (items.length > 0) {
+                for (let i in items) {
+                    completionItems.push(items[i]);
+                }
+            } else {
+                allfunctions.forEach(item => {
+                    if (item.name === autocompleteByDot.name) {
+                        found = true;
+                        if (item.output.length === 1) {
+                            //todo return array
+                            let type = item.output[0].type;
+                            if(autocompleteByDot.childAutocomplete !== undefined) {
+                                this.findDotType(allStructs, allMessages, type, autocompleteByDot.childAutocomplete, completionItems, allContracts, currentContract);
+                            } else {
+                                this.findDotTypeCompletion(allStructs, allMessages, type, completionItems, allContracts, currentContract);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -805,6 +840,51 @@ function isAutocompleteTrigeredByVariableName(variableName: string, lineText: st
     return false;
 }
 
+let CascadeAssociativeArray: {[propKey: string]: string} = {
+    "contractAddress": "Address",
+    "contractAddressExt": "Address",
+    "cell": "Cell",
+    "context": "Context",
+    "beginString": "StringBuilder",
+    "beginComment": "StringBuilder",
+    "beginTailString": "StringBuilder",
+    "beginStringFromBuilder": "StringBuilder",
+    "beginParse": "Slice",
+    "toString": "String",
+    "toCell": "Cell",
+    "toSlice": "Slice",
+    "toFloatString": "String",
+    "toCoinsString": "String",
+    "asComment": "Cell",
+    "asSlice": "Slice",
+    "asString": "String",
+    "asCell": "Cell",
+    "fromBase64": "Slice",
+    "beginCell": "Builder",
+    "endCell": "Cell",
+    "storeUint": "Builder",
+    "storeInt": "Builder",
+    "storeBool": "Builder",
+    "storeSlice": "Builder",
+    "storeCoins": "Builder",
+    "storeAddress": "Builder",
+    "storeRef": "Builder",
+    "refs": "Int",
+    "bits": "Int",
+    "hash": "Int",
+    "loadAddress": "Address",
+    "loadInt": "Int",
+    "loadBits": "Slice",
+    "loadUint": "Int",
+    "loadCoins": "Int",
+    "loadRef": "Cell",
+    "preloadInt": "Int",
+    "preloadUint": "Int",
+    "preloadBits": "Slice",
+    "emptyCell": "Cell",
+    "readForwardFee": "Int"
+}
+
 export class AutocompleteByDot {
     public isVariable: boolean = false;
     public isMethod: boolean = false;
@@ -815,7 +895,9 @@ export class AutocompleteByDot {
     public name: string = '';
 
     getTopParent(): AutocompleteByDot {
-        if(this.parentAutocomplete != undefined) {
+        if (this.parentAutocomplete != undefined && 
+            !Object.keys(CascadeAssociativeArray).includes(this.name)
+            ) {
             return this.parentAutocomplete.getTopParent();
         }
         return this;
