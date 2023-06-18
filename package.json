@@ -22,7 +22,8 @@
   ],
   "contributors": [
     "Steve Korshakov (ex3ndr) <steve@korshakov.com>",
-    "XTON crypto wallet team <askme@xtonwallet.com>"
+    "XTON crypto wallet team <askme@xtonwallet.com>",
+    "TONK Finance (defi-pickle) <team@tonk.finance>"
   ],
   "bugs": {
     "url": "https://github.com/tact-lang/tact-vscode/issues"

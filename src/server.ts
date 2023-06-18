@@ -213,7 +213,6 @@ connection.onInitialize((result): InitializeResult => {
             codeActionProvider: {
                 resolveProvider: true
             },
-            documentFormattingProvider: true,
             textDocumentSync: TextDocumentSyncKind.Full,
         },
     };
