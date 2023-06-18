@@ -5,7 +5,7 @@ const { getNextNonSpaceNonCommentCharacterIndex } = util;
 import { printComments, printSeparatedItem, printSeparatedList } from '../libs/printer-helpers';
 
 const functionName = (node: any, options: any) => {
-  return `fun ${node.name}`;
+  return `${node.modifier && node.modifier.length > 0 ? node.modifier.join(" "): ""} fun ${node.name}`;
 };
 
 const parameters = (parametersType: any, node: any, path: any, print: any, options: any) => {
@@ -52,7 +52,6 @@ const FunctionDefinition = {
       ')',
       indent(
         group([
-          // TODO: sort comments for modifiers and return parameters
           printComments(node, path, options),
           node.returns ? path.call(print, 'returns'): "",
           signatureEnd(node)

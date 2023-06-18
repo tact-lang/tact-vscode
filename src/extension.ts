@@ -30,11 +30,8 @@ export async function activate(context: ExtensionContext) {
             provideDocumentFormattingEdits(document: TextDocument, options: FormattingOptions, token: CancellationToken): ProviderResult<TextEdit[]> {
                 return Promise.resolve(formatDocument(document, context));
             },
-    }));
-
-    const documentSelector: DocumentSelector = {
-        language: 'csharp',
-    };
+        })
+    );
 
     const serverModule = path.join(__dirname, './server.js');
 
