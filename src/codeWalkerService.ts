@@ -141,7 +141,7 @@ export class Contract2 extends ParsedCode {
                     functionContract.initialise(contractElement, this);
                     this.functions.push(functionContract);
                 }
-
+/*
                 if (contractElement.type === 'InitDeclaration') {
                     const functionContract = new Function();
                     functionContract.initialise(contractElement, this);
@@ -159,7 +159,7 @@ export class Contract2 extends ParsedCode {
                     functionContract.initialise(contractElement, this);
                     this.functions.push(functionContract);
                 }
-
+*/
                 if (contractElement.type === 'StateVariableDeclaration') {
                     let stateVariable = new StateVariable();
                     stateVariable.initialise(contractElement, this);
