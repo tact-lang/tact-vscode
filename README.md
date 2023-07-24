@@ -61,5 +61,4 @@ For ideas, issues, additions, modifications please raise an issue or a pull requ
 - [x] Auto compilation
 - [x] Help with function and method signatures
 - [x] Possible actions on errors or warnings
-- [ ] Incrementally format code as the user types
 - [ ] Linter
