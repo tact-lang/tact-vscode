@@ -157,13 +157,13 @@
   resolved "https://registry.npmjs.org/@sinclair/typebox/-/typebox-0.25.21.tgz"
   integrity sha512-gFukHN4t8K4+wVC+ECqeqwzBDeFeTzBXroBTqE6vcWrQGbEUpHO7LYdG0f4xnvYq4VOEwITSlHlp0JBAIFMS/g==
 
-"@tact-lang/compiler@^1.1.0-beta.7":
-  version "1.1.0-beta.7"
-  resolved "https://registry.npmjs.org/@tact-lang/compiler/-/compiler-1.1.0-beta.7.tgz"
-  integrity sha512-ezBDz32gSt/lIa4qhTGCVmfmbaj4P2CD93D/AwcvHb6t49y3lwLw2pstbtIJ60D6UiXf26t3hdTASBx68TYZZw==
+"@tact-lang/compiler@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@tact-lang/compiler/-/compiler-1.1.3.tgz#ecc599427b307cea4e9a7eb26d89e12fffd49a41"
+  integrity sha512-2UnHMW4S1+Rb5hUQAkNZWnQ8XJV4wRq+z3gAjchOzFiZEFNzE/46aIp7E1Jx+dFkfckdWXtGqHbhkRw6rc4CfQ==
   dependencies:
     "@ipld/dag-pb" "2.1.18"
-    "@tact-lang/opcode" "^0.0.12"
+    "@tact-lang/opcode" "^0.0.13"
     arg "^5.0.2"
     blockstore-core "1.0.5"
     change-case "^4.1.2"
@@ -178,10 +178,10 @@
     ton-crypto "^3.2.0"
     zod "^3.20.2"
 
-"@tact-lang/opcode@^0.0.12":
-  version "0.0.12"
-  resolved "https://registry.npmjs.org/@tact-lang/opcode/-/opcode-0.0.12.tgz"
-  integrity sha512-iSLoENXb5KlD15d2XaH8omhSZFlmoF/uRMpblggnlt9WLxogCDNkMODyNS1EijhkhzBlAzXZIByFvWTLZda3bQ==
+"@tact-lang/opcode@^0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@tact-lang/opcode/-/opcode-0.0.13.tgz#a168df5269809be7903f663fc216f0b9486a291a"
+  integrity sha512-4FGp1p3ahVrXr2QbyD2FqmnvXTMYapTlRJSPhj4O1L2yIq7dp0CkFL9EdKOCUfyirT0X5en78PHLfj0CuQGD7A==
 
 "@tootallnate/once@1":
   version "1.1.2"
