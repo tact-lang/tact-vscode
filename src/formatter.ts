@@ -32,6 +32,7 @@ export function formatDocument(document: TextDocument, context: ExtensionContext
       try {
         formatted = prettier.format(source, options);
       } catch(e) {
+        formatted = source;
         console.log(e);
       }
       return [TextEdit.replace(fullTextRange, formatted)];

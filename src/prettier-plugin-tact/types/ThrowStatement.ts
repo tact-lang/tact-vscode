@@ -1,5 +1,7 @@
 const ThrowStatement = {
-  print: () => 'throw '
+  print: ({ node, options, path, print }: any) => {
+    return 'throw(' + node.code.value + ');';
+  }
 };
 
 export default ThrowStatement;

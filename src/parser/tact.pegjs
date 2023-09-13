@@ -1388,8 +1388,12 @@ ReturnStatement
     }
 
 ThrowStatement
-  = ThrowToken EOS {
-      return { type: "ThrowStatement", start: location().start.offset, end: location().end.offset };
+  = ThrowToken __ "(" __ code:NumericLiteral __ ")" EOS {
+      return { type: "ThrowStatement",
+               code: code,
+               start: location().start.offset,
+               end: location().end.offset
+               };
     }
 
 PrimitiveStatement
