@@ -44,22 +44,24 @@ const signatureEnd = (node: any) => (node.body ? dedent(line) : ';');
 const body = (node: any, path: any, print: any) => (node.body ? path.call(print, 'body') : '');
 
 const FunctionDefinition = {
-  print: ({ node, path, print, options }: any) => [
-    group([
-      functionName(node, options),
-      '(',
-      parameters('params', node, path, print, options),
-      ')',
-      indent(
-        group([
-          printComments(node, path, options),
-          node.returns ? path.call(print, 'returns'): "",
-          signatureEnd(node)
-        ])
-      )
-    ]),
-    body(node, path, print)
-  ]
+  print: ({ node, path, print, options }: any) => {
+    return [
+      group([
+        functionName(node, options),
+        '(',
+        parameters('params', node, path, print, options),
+        ')',
+        indent(
+          group([
+            printComments(node, path, options),
+            node.returns ? path.call(print, 'returns'): "",
+            signatureEnd(node)
+          ])
+        )
+      ]),
+      body(node, path, print)
+    ];
+  }
 };
 
 export default FunctionDefinition;

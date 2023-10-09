@@ -5,7 +5,7 @@ const { hardlineWithoutBreakParent } = doc.builders;
 const MessageDeclaration = {
   print: ({ node, path, print }: any) => //JSON.stringify(node)
   {
-    const parts = ['message ', node.name, ' {'];
+    const parts = ['message', (node.code ? '(' + path.call(print, 'code') + ')' : ""), ' ', node.name, ' {'];
 
     if (node.body.length > 0) {
       parts.push(
