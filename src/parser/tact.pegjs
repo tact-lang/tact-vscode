@@ -496,7 +496,7 @@ PrimitiveToken     = "primitive"        !IdentifierPart
 TraitToken         = "trait"            !IdentifierPart
 
 GetToken           = "get"              !IdentifierPart
-OverridesToken     = "overrides"        !IdentifierPart
+OverridesToken     = "override"        !IdentifierPart
 InlineToken        = "inline"           !IdentifierPart
 VirtualToken       = "virtual"          !IdentifierPart
 
@@ -804,12 +804,14 @@ DeclarativeExpression
   }
 
 Mapping
-  = MappingToken __ "<" __ from:Type __ "," __ to:Type __ ">" __
+  = MappingToken __ "<" __ from:Type __ "as"? __ fromPrimitive:Type? __ "," __ to:Type __ "as"? __ toPrimitive:Type? __  ">" __
   {
     return {
      type: "MappingExpression",
      from: from,
      to: to,
+     fromPrimitive: fromPrimitive != null ? fromPrimitive: "",
+     toPrimitive: toPrimitive != null ? toPrimitive: "",
      start: location().start.offset,
      end: location().end.offset
    }
@@ -1503,7 +1505,7 @@ FunctionDeclaration
         end: location().end.offset
       };
     }
-  / modifier:((__ GetToken / __ OverridesToken / __ InlineToken / __ VirtualToken / __ MutatesToken / __ PublicToken)*)? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations __ body:FunctionBody
+  / modifier:((__ GetToken / __ OverridesToken / __ InlineToken / __ VirtualToken / __ MutatesToken / __ PublicToken)*)? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ body:FunctionBody
     {
       return {
         type: "FunctionDeclaration",
@@ -1521,7 +1523,7 @@ FunctionDeclaration
         end: location().end.offset
       };
     }
-  / InitOfToken __ fnname:FunctionName __ returns:ReturnsDeclarations __ body:FunctionBody
+  / InitOfToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ body:FunctionBody
     {
       return {
         type: "FunctionDeclaration",

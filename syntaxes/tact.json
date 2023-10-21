@@ -775,7 +775,7 @@
         "declaration-function": {
             "patterns": [
                 {
-                    "begin": "\\b((?:(?:public|get|extends|overrides|inline|virtual|mutates)|\\s+)*)\\s+(fun|native)\\s+(\\w+)\\b",
+                    "begin": "\\b((?:(?:public|get|extends|override|inline|virtual|mutates)|\\s+)*)\\s+(fun|native)\\s+(\\w+)\\b",
                     "beginCaptures": {
                         "1": {
                             "name": "keyword.control.flow"

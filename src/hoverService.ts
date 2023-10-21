@@ -114,8 +114,8 @@ const hoverDescription = {
         "description": [
             "Tact compiler allows user to import files.\n",
             "Example:\n",
-            "```\nimport \"@stdlib/jetton\";\n```",
-            "```\ncontract SampleJetton with Jetton {\n\\\\...\n}\n```"
+            "```\nimport \"@stdlib/deploy\";\n```",
+            "```\ncontract SampleJetton with deploy {\n\\\\...\n}\n```"
         ]
     },
     "address": {
