@@ -4,9 +4,9 @@ const { group, indentIfBreak, label, softline } = doc.builders;
 import { printSeparatedList } from '../libs/printer-helpers';
 
 
-const printArguments = (path: any, print: any, bracketOut: any) =>
+const printArguments = (path: any, print: any, bracketOut: any, bracketIn: any) =>
   printSeparatedList(path.map(print, 'arguments'), {
-    firstSeparator: "",
+    firstSeparator: bracketIn == "{" ? softline : "",
     lastSeparator: [softline, bracketOut],
     grouped: true
   });
@@ -34,7 +34,7 @@ const CallExpression = {
     let argumentsDoc: any = [bracketOut];
 
     if (node.arguments && node.arguments.length > 0) {
-        argumentsDoc = printArguments(path, print, bracketOut);
+        argumentsDoc = printArguments(path, print, bracketOut, bracketIn);
     }
 
     // If we are at the end of a MemberAccessChain we should indent the
