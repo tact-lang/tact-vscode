@@ -775,7 +775,7 @@ StateVariableValue
   }
 
 StateVariableDeclaration
-  = modifier:((__ OverrideToken / __ AbstractToken)*)? __ isconst:ConstantToken? __ id:Identifier __ ":" __ type:Type __ "as"? __ typePrimitive:Type? isoptional:"?"? __ value:StateVariableValue? __  EOS  
+  = modifier:((__ OverrideToken / __ AbstractToken / __ VirtualToken)*)? __ isconst:ConstantToken? __ id:Identifier __ ":" __ type:Type __ "as"? __ typePrimitive:Type? isoptional:"?"? __ value:StateVariableValue? __  EOS  
   {
     return {
       type: "StateVariableDeclaration",
@@ -1122,7 +1122,7 @@ StatementList
   = head:Statement tail:(__ Statement)* { return buildList(head, tail, 1); }
 
 VariableStatement
-  = modifier:((__ OverrideToken / __ AbstractToken)*)? __ vartype:(LetToken / ConstantToken) __ declarations:VariableDeclarationList EOS {
+  = modifier:((__ OverrideToken / __ AbstractToken / __ VirtualToken)*)? __ vartype:(LetToken / ConstantToken) __ declarations:VariableDeclarationList EOS {
       return {
         type:         "VariableDeclaration",
         declarations: declarations,
@@ -1132,7 +1132,7 @@ VariableStatement
         end: location().end.offset
       };
     }
-    / modifier:((__ OverrideToken / __ AbstractToken)*)? __ vartype:(LetToken / ConstantToken) __ tuple:VariableDeclarationTuple EOS {
+    / modifier:((__ OverrideToken / __ AbstractToken / __ VirtualToken)*)? __ vartype:(LetToken / ConstantToken) __ tuple:VariableDeclarationTuple EOS {
       return {
         type:         "VariableDeclarationTuple",
         declarations: tuple.declarations,
