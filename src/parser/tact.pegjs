@@ -496,9 +496,10 @@ PrimitiveToken     = "primitive"        !IdentifierPart
 TraitToken         = "trait"            !IdentifierPart
 
 GetToken           = "get"              !IdentifierPart
-OverridesToken     = "override"        !IdentifierPart
+OverrideToken      = "override"         !IdentifierPart
 InlineToken        = "inline"           !IdentifierPart
 VirtualToken       = "virtual"          !IdentifierPart
+AbstractToken      = "abstract"         !IdentifierPart
 
 ExtendsToken       = "extends"          !IdentifierPart
 MutatesToken       = "mutates"          !IdentifierPart
@@ -774,7 +775,7 @@ StateVariableValue
   }
 
 StateVariableDeclaration
-  = __ isconst:ConstantToken? __ id:Identifier __ ":" __ type:Type __ "as"? __ typePrimitive:Type? isoptional:"?"? __ value:StateVariableValue? __  EOS  
+  = modifier:((__ OverrideToken / __ AbstractToken)*)? __ isconst:ConstantToken? __ id:Identifier __ ":" __ type:Type __ "as"? __ typePrimitive:Type? isoptional:"?"? __ value:StateVariableValue? __  EOS  
   {
     return {
       type: "StateVariableDeclaration",
@@ -782,6 +783,7 @@ StateVariableDeclaration
       literal: type,
       value: value,
       is_optional: isoptional != null,
+      modifier: modifier != null ? extractList(extractList(modifier, 1), 0): [],
       is_const: isconst != null,
       typePrimitive: typePrimitive,
       start: location().start.offset,
@@ -1120,20 +1122,22 @@ StatementList
   = head:Statement tail:(__ Statement)* { return buildList(head, tail, 1); }
 
 VariableStatement
-  = vartype:(LetToken / ConstantToken) __ declarations:VariableDeclarationList EOS {
+  = modifier:((__ OverrideToken / __ AbstractToken)*)? __ vartype:(LetToken / ConstantToken) __ declarations:VariableDeclarationList EOS {
       return {
         type:         "VariableDeclaration",
         declarations: declarations,
         var_type: vartype[0],
+        modifier: modifier != null ? extractList(extractList(modifier, 1), 0): [],
         start: location().start.offset,
         end: location().end.offset
       };
     }
-    / vartype:(LetToken / ConstantToken) __ tuple:VariableDeclarationTuple EOS {
+    / modifier:((__ OverrideToken / __ AbstractToken)*)? __ vartype:(LetToken / ConstantToken) __ tuple:VariableDeclarationTuple EOS {
       return {
         type:         "VariableDeclarationTuple",
         declarations: tuple.declarations,
         var_type: vartype[0],
+        modifier: modifier != null ? extractList(extractList(modifier, 1), 0): [],
         init: tuple.init,
         start: location().start.offset,
         end: location().end.offset
@@ -1466,7 +1470,7 @@ WithStatement
 /* ----- A.5 Functions and Programs ----- */
 
 FunctionDeclaration
-  = is_extends:ExtendsToken? __ is_mutates:MutatesToken? __ is_public:PublicToken? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ body:FunctionBody
+  = is_extends:ExtendsToken? __ is_mutates:MutatesToken? __ is_abstract:AbstractToken? __ is_public:PublicToken? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ body:FunctionBody? __ EOS?
     {
       return {
         type: "FunctionDeclaration",
@@ -1475,12 +1479,13 @@ FunctionDeclaration
         params: fnname.params,
         returns: returns,
         body: body,
-        modifier: "",
+        modifier: [],
         is_initOf: false,
         is_native: false,
         is_extends: is_extends != null,
         is_mutates: is_mutates != null,
         is_public: is_public != null,
+        is_abstract: is_abstract != null,
         start: location().start.offset,
         end: location().end.offset
       };
@@ -1495,17 +1500,18 @@ FunctionDeclaration
         params: fnname.params,
         returns: returns,
         body: null,
-        modifier: "",
+        modifier: [],
         is_initOf: false,
         is_native: true,
         is_extends: is_extends != null,
         is_mutates: is_mutates != null,
         is_public: is_public != null,
+        is_abstract: false,
         start: location().start.offset,
         end: location().end.offset
       };
     }
-  / modifier:((__ GetToken / __ OverridesToken / __ InlineToken / __ VirtualToken / __ MutatesToken / __ PublicToken)*)? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ body:FunctionBody
+  / modifier:((__ GetToken / __ OverrideToken / __ InlineToken / __ VirtualToken / __ AbstractToken / __ MutatesToken / __ PublicToken)*)? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ body:FunctionBody? __ EOS?
     {
       return {
         type: "FunctionDeclaration",
@@ -1519,6 +1525,7 @@ FunctionDeclaration
         is_extends: false,
         is_mutates: false,
         is_public: false,
+        is_abstract: false,
         start: location().start.offset,
         end: location().end.offset
       };
@@ -1531,11 +1538,12 @@ FunctionDeclaration
         params: fnname.params,
         returns: returns,
         body: body,
-        modifier: "",
+        modifier: [],
         is_initOf: true,
         is_native: false,
         is_extends: false,
         is_mutates: false,
+        is_abstract: false,
         start: location().start.offset,
         end: location().end.offset
       };
@@ -1733,13 +1741,13 @@ SourceUnits
 
 SourceUnit
   = ImportStatement
-  / FunctionDeclaration
   / VariableStatement
   / ContractStatement
   / MessageDeclaration
   / StructDeclaration
   / PrimitiveStatement
   / TraitStatement
+  / FunctionDeclaration
 
 SourceElements
   = head:SourceElement tail:(__ SourceElement)* {

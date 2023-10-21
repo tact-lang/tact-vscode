@@ -15,16 +15,19 @@ const initialValue = (node: any, path: any, print: any) => {
 
 const StateVariableDeclaration = {
   print: ({ node, path, print }: any) => //JSON.stringify(node)
-  [
-    node.is_const ? "const " : "",
-    node.name,
-    ": ",
-    path.call(print, "literal"),
-    node.is_optional ? "?" : "",
-    (node.typePrimitive != null ? " as " + path.call(print, "typePrimitive") : ""),
-    initialValue(node, path, print),
-    ';'
-  ]
+  {
+    return [
+      node.modifier && node.modifier.length > 0 ? node.modifier.join(" ") + " ": "",
+      node.is_const ? "const " : "",
+      node.name,
+      ": ",
+      path.call(print, "literal"),
+      node.is_optional ? "?" : "",
+      (node.typePrimitive != null ? " as " + path.call(print, "typePrimitive") : ""),
+      initialValue(node, path, print),
+      ';'
+    ]
+  }
 };
 
 export default StateVariableDeclaration;
