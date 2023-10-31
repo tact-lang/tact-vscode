@@ -47,6 +47,7 @@ const FunctionDefinition = {
   print: ({ node, path, print, options }: any) => {
     return [
       group([
+        node.is_extends ? 'extends' : null ?? node.is_abstract ? 'abstract' : null ?? '',
         functionName(node, options),
         '(',
         parameters('params', node, path, print, options),
