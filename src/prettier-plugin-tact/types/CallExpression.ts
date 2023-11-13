@@ -13,7 +13,7 @@ const printArguments = (path: any, print: any, bracketOut: any, bracketIn: any) 
 
 let groupIndex = 0;
 const CallExpression = {
-  print: ({ node, path, print, options }: any) => {
+  print: ({ node, path, print }: any) => {
     let bracketOut = ')';
     let bracketIn = '(';
     switch (node.argumentsType) {
