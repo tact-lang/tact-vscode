@@ -735,13 +735,14 @@ Primitive
   / StateInitToken
 
 Type
-  = literal:(Mapping / Identifier) members:("." Identifier)* parts:(__"[" __ (Expression)? __ "]")*
+  = literal:(Mapping / Identifier) members:("." Identifier)* parts:(__"[" __ (Expression)? __ "]")* subparts:(__"<" __ (Expression)? __ ">")*
   {
     return {
       type: "Type",
       literal: literal.type == "Identifier" ? literal.name : literal,
       members: optionalList(members).map(function(m) {return m[1].name;}),
-      array_parts: optionalList(parts).map(function(p) {return p[3] != null ? p[3].value : null}),
+      array_parts: optionalList(parts).map(function(p) {return p[3] != null ? p[3] : null}),
+      array_subparts: optionalList(subparts).map(function(p) {return p[3] != null ? p[3] : null}),
       start: location().start.offset,
       end: location().end.offset
     }

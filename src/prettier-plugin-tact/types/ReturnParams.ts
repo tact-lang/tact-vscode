@@ -6,7 +6,7 @@ const ReturnParams = {
   print: ({ node, path, print }: any) => {
     //JSON.stringify(node)
     return node.params ? 
-    [": ",
+    [": ", 
       group(printSeparatedList(path.call(print, 'params'), {
         firstSeparator: "",
         lastSeparator: "",
@@ -14,7 +14,7 @@ const ReturnParams = {
         grouped: false
       })),
       (node.is_optional ? "?": "")
-    ] : " "
+    ] : [" "]
   }
 };
 

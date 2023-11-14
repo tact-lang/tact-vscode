@@ -43,9 +43,11 @@ export default {
       node.left.type !== 'BinaryExpression' &&
       path.getParentNode().type !== 'BinaryExpression';
     return groupIfNecessary([
+      ['+','-'].includes(node.operator) ? "(": "",
       path.call(print, 'left'),
       ' ',
-      indentIfNecessary(shouldGroup ? group(right) : right)
+      indentIfNecessary(shouldGroup ? group(right) : right),
+      ['+','-'].includes(node.operator) ? ")": "",
     ]);
   }
 };
