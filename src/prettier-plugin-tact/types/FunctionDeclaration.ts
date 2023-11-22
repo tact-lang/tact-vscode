@@ -5,7 +5,7 @@ const { getNextNonSpaceNonCommentCharacterIndex } = util;
 import { printComments, printSeparatedItem, printSeparatedList } from '../libs/printer-helpers';
 
 const functionName = (node: any, options: any) => {
-  return `${node.modifier && node.modifier.length > 0 ? node.modifier.join(" "): ""} fun ${node.name}`;
+  return `${node.modifier && node.modifier.length > 0 ? node.modifier.join(" ") + " ": ""}fun ${node.name}`;
 };
 
 const parameters = (parametersType: any, node: any, path: any, print: any, options: any) => {
