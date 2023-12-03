@@ -1,11 +1,11 @@
 import { doc, util } from 'prettier';
-const { dedent, group, indent, join, line } = doc.builders;
+const { dedent, group, indent, line } = doc.builders;
 const { getNextNonSpaceNonCommentCharacterIndex } = util;
 
 import { printComments, printSeparatedItem, printSeparatedList } from '../libs/printer-helpers';
 
-const functionName = (node: any, options: any) => {
-  return `${node.modifier && node.modifier.length > 0 ? node.modifier.join(" ") + " ": ""}fun ${node.name}`;
+const functionName = (node: any, options: any, path: any, print: any) => {
+  return `${node.modifier && node.modifier.length > 0 ? node.modifier.join(" "): ''}${node.is_native ? 'native': ' fun'} ${node.name}`;
 };
 
 const parameters = (parametersType: any, node: any, path: any, print: any, options: any) => {
@@ -47,8 +47,9 @@ const FunctionDefinition = {
   print: ({ node, path, print, options }: any) => {
     return [
       group([
-        node.is_extends ? 'extends' : null ?? node.is_abstract ? 'abstract' : null ?? '',
-        functionName(node, options),
+        node.is_native ? `@name(${path.call(print, 'idNative')})\n`: '',
+        node.is_extends ? 'extends ' : null ?? node.is_abstract ? 'abstract ' : null ?? '',
+        functionName(node, options, path, print),
         '(',
         parameters('params', node, path, print, options),
         ')',
