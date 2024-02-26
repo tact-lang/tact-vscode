@@ -452,6 +452,7 @@ InitOfToken     = "initOf"     !IdentifierPart
 ContractToken   = "contract"   !IdentifierPart
 InitToken       = "init"       !IdentifierPart
 ReceiveToken    = "receive"    !IdentifierPart
+ExternalToken   = "external"    !IdentifierPart
 OnBounceToken   = "bounced"    !IdentifierPart
 DeleteToken     = "delete"     !IdentifierPart
 DoToken         = "do"         !IdentifierPart
@@ -1574,6 +1575,18 @@ ReceiveDeclaration
       };
     }
 
+ExternalDeclaration
+  = ExternalToken __ params:("(" __ InformalParameterList? __ ")") __ body:FunctionBody
+    {
+      return {
+        type: "ExternalDeclaration",
+        params: params != null ? params[2] : [],
+        body: body,
+        start: location().start.offset,
+        end: location().end.offset
+      };
+    }
+
 OnBounceDeclaration
   = OnBounceToken __ params:("(" __ InformalParameterList? __ ")") __ body:FunctionBody
     {
@@ -1761,6 +1774,7 @@ SourceElement
   / FunctionDeclaration
   / InitDeclaration
   / ReceiveDeclaration
+  / ExternalDeclaration
   / OnBounceDeclaration
 
 ReturnOpCode

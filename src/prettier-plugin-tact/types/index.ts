@@ -36,6 +36,7 @@ import PlaceholderStatement from './PlaceholderStatement';
 import PrimitiveStatement from './PrimitiveStatement';
 import Program from './Program';
 import ReceiveDeclaration from './ReceiveDeclaration';
+import ExternalDeclaration from './ExternalDeclaration';
 import RepeatStatement from './RepeatStatement';
 import ReturnParams from './ReturnParams';
 import ReturnStatement from './ReturnStatement';
@@ -62,7 +63,7 @@ export {
   ContinueStatement, ContractStatement, DeclarativeExpression, DenominationLiteral, DoWhileStatement, EmptyStatement, ExpressionStatement, 
   FunctionDeclaration, FunctionName, Identifier, IfStatement, ImportStatement, IncompleteStatement, InformalParameter, InitDeclaration, InitOfExpression, 
   Literal, LogicalExpression, MappingExpression, MemberExpression, MessageDeclaration, ModifierArgument, ModifierName, NameValueAssignment, NewExpression,
-  OnBounceDeclaration, PlaceholderStatement, PrimitiveStatement, Program, ReceiveDeclaration, RepeatStatement, ReturnParams, ReturnStatement,
+  OnBounceDeclaration, PlaceholderStatement, PrimitiveStatement, Program, ReceiveDeclaration, ExternalDeclaration, RepeatStatement, ReturnParams, ReturnStatement,
   SequenceExpression, StateMutabilitySpecifier, StateVariableDeclaration, StructDeclaration, Symbol, ThisExpression, ThrowStatement, TraitStatement,
   TryStatement, Type, UnaryExpression, UpdateExpression, VariableDeclaration, VariableDeclarationTuple, VariableDeclarator, VersionLiteral,
   WhileStatement, WithStatement

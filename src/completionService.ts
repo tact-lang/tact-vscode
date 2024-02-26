@@ -659,6 +659,11 @@ export function GetGlobalVariables(): CompletionItem[] {
             detail: 'Int 32',
             kind: CompletionItemKind.Variable,
             label: 'SendDestroyIfZero',
+        },
+        {
+            detail: 'Int 16',
+            kind: CompletionItemKind.Variable,
+            label: 'SendBounceIfActionFail',
         }
     ];
 }

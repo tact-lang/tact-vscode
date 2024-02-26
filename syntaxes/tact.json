@@ -183,7 +183,7 @@
             "name": "keyword.operator.mapping"
         },
         "operator-arithmetic": {
-            "match": "(\\+|\\-|\\/|\\*)",
+            "match": "(\\+|\\-|\\/|\\*|%)",
             "name": "keyword.operator.arithmetic"
         },
         "operator-binary": {
@@ -296,6 +296,12 @@
                     "include": "#number-decimal"
                 },
                 {
+                    "include": "#number-octal"
+                },
+                {
+                    "include": "#number-binary"
+                },
+                {
                     "include": "#number-hex"
                 },
                 {
@@ -307,8 +313,16 @@
             "match": "\\b([0-9_]+(\\.[0-9_]+)?)\\b",
             "name": "constant.numeric.decimal"
         },
+        "number-octal": {
+            "match": "\\b(0o[0-7_]+)\\b",
+            "name": "constant.numeric.octal"
+        },
+        "number-binary": {
+            "match": "\\b(0b[01_]+)\\b",
+            "name": "constant.numeric.binary"
+        },
         "number-hex": {
-            "match": "\\b(0[xX][a-fA-F0-9]+)\\b",
+            "match": "\\b(0[xX][a-fA-F0-9_]+)\\b",
             "name": "constant.numeric.hexadecimal"
         },
         "number-scientific": {
@@ -331,6 +345,12 @@
             "patterns": [
                 {
                     "include": "#number-decimal"
+                },
+                {
+                    "include": "#number-octal"
+                },
+                {
+                    "include": "#number-binary"
                 },
                 {
                     "include": "#number-hex"
