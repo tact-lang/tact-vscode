@@ -157,10 +157,10 @@
   resolved "https://registry.npmjs.org/@sinclair/typebox/-/typebox-0.25.21.tgz"
   integrity sha512-gFukHN4t8K4+wVC+ECqeqwzBDeFeTzBXroBTqE6vcWrQGbEUpHO7LYdG0f4xnvYq4VOEwITSlHlp0JBAIFMS/g==
 
-"@tact-lang/compiler@^1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@tact-lang/compiler/-/compiler-1.1.5.tgz#cad19bcf803943b23a1ecc9d6e9749c645b295a6"
-  integrity sha512-J48CKURf5bx3iIH6JKcGi/aiS0ASHe610caeD5Ud7sOFMRpHkDkDepE+7nRm/EsiAi5HVHwSwSVsW2YvB1CHNw==
+"@tact-lang/compiler@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@tact-lang/compiler/-/compiler-1.2.0.tgz#803b2ea7ca37a6fd99da731f584715596bf2270e"
+  integrity sha512-H44pj+DV6G9CYbl+oVOSHbwcicrxA5sZ0sCVseb2Z7uTqptb3+hEj2p/rLS3AtJ/KeEibzasLGf5wgnX2eSLbw==
   dependencies:
     "@ipld/dag-pb" "2.1.18"
     "@tact-lang/opcode" "^0.0.14"
@@ -176,7 +176,7 @@
     path-normalize "^6.0.10"
     prando "^6.0.1"
     qs "^6.11.0"
-    zod "^3.20.2"
+    zod "^3.22.4"
 
 "@tact-lang/opcode@^0.0.14":
   version "0.0.14"
@@ -2945,3 +2945,8 @@ zod@^3.20.2:
   version "3.20.2"
   resolved "https://registry.npmjs.org/zod/-/zod-3.20.2.tgz"
   integrity sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==
+
+zod@^3.22.4:
+  version "3.22.4"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.22.4.tgz#f31c3a9386f61b1f228af56faa9255e845cf3fff"
+  integrity sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==
