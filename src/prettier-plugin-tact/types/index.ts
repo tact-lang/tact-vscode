@@ -13,6 +13,7 @@ import DenominationLiteral from './DenominationLiteral';
 import DoWhileStatement from './DoWhileStatement';
 import EmptyStatement from './EmptyStatement';
 import ExpressionStatement from './ExpressionStatement';
+import ForeachStatement from './ForeachStatement';
 import FunctionDeclaration from './FunctionDeclaration';
 import FunctionName from './FunctionName';
 import Identifier from './Identifier';
@@ -60,7 +61,7 @@ import WhileStatement from './WhileStatement';
 import WithStatement from './WithStatement';
 export {
   ArrayExpression, AssignmentExpression, BinaryExpression, BlockStatement, BreakStatement, CallExpression, CatchClause, ConditionalExpression, 
-  ContinueStatement, ContractStatement, DeclarativeExpression, DenominationLiteral, DoWhileStatement, EmptyStatement, ExpressionStatement, 
+  ContinueStatement, ContractStatement, DeclarativeExpression, DenominationLiteral, DoWhileStatement, EmptyStatement, ExpressionStatement, ForeachStatement,
   FunctionDeclaration, FunctionName, Identifier, IfStatement, ImportStatement, IncompleteStatement, InformalParameter, InitDeclaration, InitOfExpression, 
   Literal, LogicalExpression, MappingExpression, MemberExpression, MessageDeclaration, ModifierArgument, ModifierName, NameValueAssignment, NewExpression,
   OnBounceDeclaration, PlaceholderStatement, PrimitiveStatement, Program, ReceiveDeclaration, ExternalDeclaration, RepeatStatement, ReturnParams, ReturnStatement,

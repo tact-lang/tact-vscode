@@ -51,10 +51,12 @@
   }
 
   function extractList(list, index) {
-    var result = new Array(list.length), i;
+    var result = new Array(), i;
 
     for (i = 0; i < list.length; i++) {
-      result[i] = list[i][index];
+      if (list[i][index].length != 0) {
+        result[i] = list[i][index];
+      }
     }
 
     return result;
@@ -333,14 +335,14 @@ CharacterEscapeSequence
 
 SingleEscapeCharacter
   = "'"
-  / '"'
-  / "\\"
-  / "b"  { return "\b";   }
-  / "f"  { return "\f";   }
-  / "n"  { return "\n";   }
-  / "r"  { return "\r";   }
-  / "t"  { return "\t";   }
-  / "v"  { return "\x0B"; }   // IE does not recognize "\v".
+  / '"'  { return "\\\""; }
+  / "\\" { return "\\\\"; }
+  / "b"  { return "\\b";   }
+  / "f"  { return "\\f";   }
+  / "n"  { return "\\n";   }
+  / "r"  { return "\\r";   }
+  / "t"  { return "\\t";   }
+  / "v"  { return "\\v";   }
 
 NonEscapeCharacter
   = !(EscapeCharacter / LineTerminator) SourceCharacter { return text(); }
@@ -353,12 +355,15 @@ EscapeCharacter
 
 HexEscapeSequence
   = "x" digits:$(HexDigit HexDigit) {
-      return String.fromCharCode(parseInt(digits, 16));
+      return "\\" + "x" + digits;
     }
 
 UnicodeEscapeSequence
   = "u" digits:$(HexDigit HexDigit HexDigit HexDigit) {
-      return String.fromCharCode(parseInt(digits, 16));
+      return "\\" + "u" + digits;
+    } /
+    "u{" digits:$(HexDigit HexDigit? HexDigit? HexDigit? HexDigit? HexDigit?) "}" {
+      return "\\" + "u{" + digits + "}";
     }
 
 VersionLiteral
@@ -480,6 +485,7 @@ ThrowToken      = "throw"      !IdentifierPart
 TrueToken       = "true"       !IdentifierPart
 TonToken        = "ton"        !IdentifierPart
 WhileToken      = "while"      !IdentifierPart
+ForeachToken    = "foreach"    !IdentifierPart
 UntilToken      = "until"      !IdentifierPart
 
 ContextToken       = "Context"          !IdentifierPart
@@ -650,13 +656,13 @@ InitOfExpression
 
 CallExpression
   = head:(
-      callee:MemberExpression __ args:Arguments {
-        return { type: "CallExpression", callee: callee, arguments: args != null ? args[0]: null, argumentsType: args != null ? args[1]: null, start: location().start.offset, end: location().end.offset };
+      callee:MemberExpression __ args:Arguments __ optionalArgs:"!!"? {
+        return { type: "CallExpression", callee: callee, arguments: args != null ? args[0]: null, argumentsType: args != null ? args[1]: null, optional: optionalArgs != null, start: location().start.offset, end: location().end.offset };
       }
     )
     tail:(
-        __ args:Arguments {
-          return { type: "CallExpression", arguments: args != null ? args[0]: null, argumentsType: args != null ? args[1]: null, start: location().start.offset, end: location().end.offset };
+        __ args:Arguments __ optionalArgs:"!!"? {
+          return { type: "CallExpression", arguments: args != null ? args[0]: null, argumentsType: args != null ? args[1]: null, optional: optionalArgs != null, start: location().start.offset, end: location().end.offset };
         }
       / __ "[" __ property:Expression __ "]" {
           return {
@@ -697,17 +703,17 @@ Arguments
   }
 
 ArgumentList
-  = head:AssignmentExpression tail:(__ "," __ AssignmentExpression)* {
+  = head:AssignmentExpression tail:(__ "," __ AssignmentExpression)* ","? {
       return buildList(head, tail, 3);
     }
 
 NameValueList
-  = head:NameValueAssignment tail:(__ "," __ NameValueAssignment)* {
+  = head:NameValueAssignment tail:(__ "," __ NameValueAssignment)* ","? {
       return buildList(head, tail, 3);
     }
 
 NameValueAssignment
-  = name:Identifier __ ":" __ value:AssignmentExpression __ {
+  = name:Identifier __ ":"? __ value:AssignmentExpression? __ {
       return {
         type: "NameValueAssignment",
         name: name,
@@ -1361,6 +1367,20 @@ IterationStatement
         end: location().end.offset
       };
     }
+  / ForeachToken __
+    "(" __ key:IdentifierName __ "," __ value:IdentifierName __ "in" __ mapName:IdentifierName __ ")" __
+    body:Statement
+    {
+      return {
+        type:   "ForeachStatement",
+        key:     key,
+        value:   value,
+        mapName: mapName,
+        body:    body,
+        start:   location().start.offset,
+        end:     location().end.offset
+      };
+    }
 
 PlaceholderStatement
   = "_" (__ EOS)? {
@@ -1459,7 +1479,7 @@ MessageDeclaration
   }
 
 WithStatement
-  = WithToken __ modifiers:CommaSeparatedModifierNameList
+  = WithToken __ modifiers:CommaSeparatedModifierNameList __ ","?
   {
     return {
       type: "WithStatement",
@@ -1472,7 +1492,7 @@ WithStatement
 /* ----- A.5 Functions and Programs ----- */
 
 FunctionDeclaration
-  = is_extends:ExtendsToken? __ is_mutates:MutatesToken? __ is_abstract:AbstractToken? __ is_public:PublicToken? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ body:FunctionBody? __ EOS?
+  = __ is_extends:ExtendsToken? __ is_mutates:MutatesToken? __ is_abstract:AbstractToken? __ is_public:PublicToken? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ body:FunctionBody? __ EOS?
     {
       return {
         type: "FunctionDeclaration",
@@ -1493,7 +1513,7 @@ FunctionDeclaration
       };
     }
   / "@name(" __ id_native:Identifier __ ")" LineTerminator
-    is_extends:ExtendsToken? __ is_mutates:MutatesToken? __ is_public:PublicToken? __ NativeToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ EOS
+    __ is_extends:ExtendsToken? __ is_mutates:MutatesToken? __ is_public:PublicToken? __ NativeToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ EOS
     {
       return {
         type: "FunctionDeclaration",

@@ -51,10 +51,18 @@ const CallExpression = {
       });
       // We wrap the expression in a label in case there is an IndexAccess or
       // a CallExpression following this IndexAccess.
-      return label('MemberAccessChain', [expressionDoc, bracketIn, argumentsDoc]);
+      if (node.optional) {
+        return label('MemberAccessChain', [expressionDoc, bracketIn, argumentsDoc, '!!']);
+      } else {
+        return label('MemberAccessChain', [expressionDoc, bracketIn, argumentsDoc]);
+      }
     }
 
-    return [expressionDoc, bracketIn, argumentsDoc];
+    if (node.optional) {
+      return [expressionDoc, bracketIn, argumentsDoc, '!!'];
+    } else {
+      return [expressionDoc, bracketIn, argumentsDoc];
+    }
   }
 };
 

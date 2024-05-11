@@ -37,15 +37,17 @@ const parameters = (parametersType: any, node: any, path: any, print: any, optio
 const body = (node: any, path: any, print: any) => (node.body ? path.call(print, 'body') : '');
 
 const InitDeclaration = {
-  print: ({ node, path, print, options }: any) => [
-    group([
-      'init',
-      '(',
-      parameters('params', node, path, print, options),
-      ')'
-    ]),
-    body(node, path, print)
-  ]
+  print: ({ node, path, print, options }: any) => {
+    return [
+      group([
+        'init',
+        '(',
+        parameters('params', node, path, print, options),
+        ')'
+      ]),
+      body(node, path, print)
+    ]
+  }
 };
 
 export default InitDeclaration;

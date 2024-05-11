@@ -1,9 +1,11 @@
 const NameValueExpression = {
-  print: ({ path, print }: any) => //JSON.stringify(path)
-  [ path.call(print, 'name'),
-    ": ",
-    path.call(print, 'value'),
-  ]
+  print: ({ node, path, print }: any) => {
+    if (node.value == null) {
+      return [ path.call(print, 'name') ]
+    } else {
+      return [ path.call(print, 'name'), ": ", path.call(print, 'value') ]
+    }
+  }
 };
 
 export default NameValueExpression;

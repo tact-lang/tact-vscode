@@ -89,6 +89,14 @@
 		"require expression": {
 			"prefix": "req",
 			"body": "require(${1:Bool}, ${2:String});"
+		},
+		"try expression": {
+			"prefix": "try",
+			"body": "try {\n\n}"
+		},
+		"try catch expression": {
+			"prefix": "try-catch",
+			"body": "try {\n\n} catch (e) {\n\n}"
 		}
 	}
 }

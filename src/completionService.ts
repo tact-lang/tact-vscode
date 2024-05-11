@@ -281,7 +281,7 @@ export class CompletionService {
             selectedFunction.findVariableDeclarationsInScope(offset);
             //adding input parameters
             allVariables = allVariables.concat(selectedFunction.input);
-            //ading all variables
+            //adding all variables
             allVariables = allVariables.concat(selectedFunction.variablesInScope);
         }
         
@@ -333,9 +333,8 @@ export class CompletionService {
                     items = getStringBuilderCompletionItems();
                     break;
                 case "Address":
-                    // no methods now
+                    items = getAddressCompletionItems();
                     break;
-                    
             }
 
             if (items.length > 0) {
@@ -443,6 +442,13 @@ export class CompletionService {
 
         if (type?.name == 'Context') {
             const items = getContextCompletionItems();
+            for (let i in items) {
+                completionItems.push(items[i]);
+            }
+        }
+
+        if (type?.name == 'Address') {
+            const items = getAddressCompletionItems();
             for (let i in items) {
                 completionItems.push(items[i]);
             }
@@ -664,7 +670,37 @@ export function GetGlobalVariables(): CompletionItem[] {
             detail: 'Int 16',
             kind: CompletionItemKind.Variable,
             label: 'SendBounceIfActionFail',
-        }
+        },
+        {
+            detail: 'Int 0',
+            kind: CompletionItemKind.Variable,
+            label: 'ReserveExact',
+        },
+        {
+            detail: 'Int 1',
+            kind: CompletionItemKind.Variable,
+            label: 'ReserveAllExcept',
+        },
+        {
+            detail: 'Int 2',
+            kind: CompletionItemKind.Variable,
+            label: 'ReserveAtMost',
+        },
+        {
+            detail: 'Int 4',
+            kind: CompletionItemKind.Variable,
+            label: 'ReserveAddOriginalBalance',
+        },
+        {
+            detail: 'Int 8',
+            kind: CompletionItemKind.Variable,
+            label: 'ReserveInvertSign',
+        },
+        {
+            detail: 'Int 16',
+            kind: CompletionItemKind.Variable,
+            label: 'ReserveBounceIfActionFail',
+        },
     ];
 }
 
@@ -1087,6 +1123,27 @@ function getMathCompletionItems(): CompletionItem[] {
             insertTextFormat: 2,
             label: 'nativeRandomInterval',
         },
+        {
+            detail: 'Power function with base 2',
+            kind: CompletionItemKind.Property,
+            insertText: 'pow2(${1:Int})',
+            insertTextFormat: 2,
+            label: 'pow2',
+        },
+        {
+            detail: 'Logarithm function with base 2',
+            kind: CompletionItemKind.Property,
+            insertText: 'log2(${1:Int})',
+            insertTextFormat: 2,
+            label: 'log2',
+        },
+        {
+            detail: 'Logarithm function with base',
+            kind: CompletionItemKind.Property,
+            insertText: 'log(${1:Int},${2:Int})',
+            insertTextFormat: 2,
+            label: 'log',
+        },
     ]
 }
 
@@ -1131,6 +1188,20 @@ function getMapCompletionItems(): CompletionItem[] {
             insertTextFormat: 2,
             label: 'set',
         },
+        {
+            detail: 'As cell',
+            kind: CompletionItemKind.Property,
+            insertText: "asCell()",
+            insertTextFormat: 2,
+            label: 'asCell',
+        },
+        {
+            detail: 'Is empty',
+            kind: CompletionItemKind.Property,
+            insertText: "isEmpty()",
+            insertTextFormat: 2,
+            label: 'isEmpty',
+        },
     ]
 }
 
@@ -1170,6 +1241,25 @@ function getStringBuilderCompletionItems(): CompletionItem[] {
             insertText: "toSlice()",
             insertTextFormat: 2,
             label: 'toSlice',
+        },
+        {
+            detail: 'Concatenation of strings',
+            kind: CompletionItemKind.Property,
+            insertText: "concat()",
+            insertTextFormat: 2,
+            label: 'concat',
+        },
+    ];
+}
+
+function getAddressCompletionItems(): CompletionItem[] {
+    return [
+        {
+            detail: 'Address to string.',
+            kind: CompletionItemKind.Property,
+            insertText: "toString()",
+            insertTextFormat: 2,
+            label: 'toString',
         },
     ];
 }

@@ -213,7 +213,7 @@
         "control-flow": {
             "patterns": [
                 {
-                    "match": "\\b(if|else|while|do|until|repeat|return|extends|mutates|abstract|native|let|override|virtual|const|self|is|initOf|map|primitive|as|null)\\b",
+                    "match": "\\b(if|else|foreach|in|while|do|until|repeat|return|extends|mutates|abstract|native|let|override|virtual|const|self|is|initOf|map|primitive|as|null|try|catch)\\b",
                     "name": "keyword.control.flow"
                 }
             ]
@@ -332,11 +332,11 @@
         "string": {
             "patterns": [
                 {
-                    "match": "\\\".*?\\\"",
+                    "match": "\\\"(?:(?:\\\\\")|[^\\\"])*\\\"",
                     "name": "string.quoted.double"
                 },
                 {
-                    "match": "\\'.*?\\'",
+                    "match": "\\'[^\\']*\\'",
                     "name": "string.quoted.single"
                 }
             ]
