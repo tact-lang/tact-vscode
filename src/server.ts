@@ -16,6 +16,7 @@ import { HoverService } from './hoverService';
 import { RefactorService } from './refactorService';
 import { TactCompiler } from './tactCompiler';
 import { URI } from 'vscode-uri';
+import { formatDocument } from './formatter';
 
 interface Settings {
     tact: TactSettings;
@@ -40,7 +41,7 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let rootPath: string | undefined;
 let tactCompiler: TactCompiler;
 
-let enabledAsYouTypeErrorCheck = false;
+let enabledAsYouTypeErrorCheck = true;
 let validationDelay = 1500;
 
 // flags to avoid trigger concurrent validations (compiling is slow)
@@ -68,12 +69,12 @@ async function validate(document: TextDocument) {
                 let newDocumentsWithErrors: any = [];
                 for (let fileName in compileErrorDiagnostics) {
                     newDocumentsWithErrors.push(URI.file(fileName).path);
-                    connection.sendDiagnostics({diagnostics: compileErrorDiagnostics[fileName], uri: URI.file(fileName).path});
+                    connection.sendDiagnostics({diagnostics: compileErrorDiagnostics[fileName], uri: "file://"+URI.file(fileName).path});
                 }
                 let difference = documentsWithErrors.filter((x: any) => !newDocumentsWithErrors.includes(x));
                 // if an error is resolved, we must to send empty diagnostics for the URI contained it;
                 for(let item in difference) {
-                    connection.sendDiagnostics({diagnostics: [], uri: difference[item]});
+                    connection.sendDiagnostics({diagnostics: [], uri: "file://"+difference[item]});
                 } 
                 documentsWithErrors = newDocumentsWithErrors;
             }
@@ -213,7 +214,8 @@ connection.onInitialize((result): InitializeResult => {
             codeActionProvider: {
                 resolveProvider: true
             },
-            textDocumentSync: TextDocumentSyncKind.Full,
+            documentFormattingProvider: true,
+            textDocumentSync: TextDocumentSyncKind.Incremental,
         },
     };
 });
@@ -248,6 +250,14 @@ connection.onCodeAction((params: CodeActionParams): CodeAction[] | undefined => 
 connection.onRenameRequest((params) => {
     let provider = new RefactorService(rootPath);
     return provider.rename(documents.get(params.textDocument.uri) as TextDocument, params.position, params.newName);
+});
+
+connection.onDocumentFormatting((params) => {
+    const document = documents.get(params.textDocument.uri);
+    if (document == undefined) {
+        return [];
+    }
+    return formatDocument(document as any, rootPath as string);
 });
 
 // Make the text document manager listen on the connection

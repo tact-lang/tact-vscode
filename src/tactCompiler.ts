@@ -39,14 +39,23 @@ export class TactCompiler {
         }
 
         const pathKey = path.relative( this.rootPath, args.file).replaceAll('\\','/');
+
+        let rootPath = this.rootPath;
+
+        // If the root path is not set, which occurs when a single file is opened separately, set the root path to the directory containing the file.
+        if(!this.isRootPathSet()) {
+            rootPath = path.dirname(args.file);
+        }
+
         const pathContent = fs.readFileSync(pathKey);
         const fsObject = {} as any;
                 fsObject[pathKey] = pathContent.toString('base64');
             for (let pathKey in args.sources) {
-                fsObject[path.relative( this.rootPath, pathKey).replaceAll('\\','/')] = Buffer.from(args.sources[pathKey].content).toString('base64');
+                const fileContent = args.sources[pathKey].content || args.sources[pathKey];
+                fsObject[path.relative( rootPath, pathKey).replaceAll('\\','/')] = Buffer.from(fileContent).toString('base64');
             }
-        const result: CheckResult = check({ project: createVirtualFileSystem(path.resolve(this.rootPath).replaceAll('\\','/'), fsObject),
-                                            entrypoint: path.relative( this.rootPath, args.file).replaceAll('\\','/')
+        const result: CheckResult = check({ project: createVirtualFileSystem(path.resolve(rootPath).replaceAll('\\','/'), fsObject),
+                                            entrypoint: path.relative( rootPath, args.file).replaceAll('\\','/')
                                             });
         return result;
     }
