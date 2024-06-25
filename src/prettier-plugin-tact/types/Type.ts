@@ -6,6 +6,9 @@ const Type = {
     let out = [];
     const literal = typeof node.literal == "object" ? path.call(print, "literal") : node.literal;
     out.push(literal);
+    if (node.is_optional) {
+      out.push('?');
+    }
     if (node.members.length) {
       out.push('.' + node.members.join('.'));
     }
