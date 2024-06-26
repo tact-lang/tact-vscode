@@ -1,11 +1,10 @@
 import { printSeparatedList } from '../libs/printer-helpers';
 
-const parameters = (node: any, path: any, print: any) =>
-  node.parameters
+const param = (node: any, path: any, print: any) =>
+  node.param
     ? [
-        node.kind || '',
         '(',
-        printSeparatedList(path.map(print, 'parameters')),
+        path.call(print, 'param'),
         ') '
       ]
     : '';
@@ -14,7 +13,7 @@ const CatchClause = {
   print: ({ node, path, print }: any) => //JSON.stringify(node)
   [
     'catch ',
-    parameters(node, path, print),
+    param(node, path, print),
     path.call(print, 'body')
   ]
 };

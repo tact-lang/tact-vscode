@@ -10,7 +10,7 @@ const initialValue = (node: any, path: any, print: any) => {
     return [' = ', path.call(print, 'value')];
   }
 
-  return ' = ' + path.call(print, 'value');
+  return [' = ', path.call(print, 'value')];
 };
 
 const StateVariableDeclaration = {
@@ -34,7 +34,7 @@ const StateVariableDeclaration = {
       out.push(path.call(print, "typePrimitive"));
     }
     out.push(initialValue(node, path, print));
-    out.push(";");
+    out.push(";"); 
     return out;
   }
 };

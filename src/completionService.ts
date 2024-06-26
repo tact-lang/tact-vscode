@@ -68,7 +68,10 @@ export class CompletionService {
                 params = params.params;
             }
             params.forEach((parameterElement: any) => {
-               const typeString = this.getTypeString(parameterElement.literal);
+                if (typeof parameterElement.literal == "undefined") {
+                    return;
+                }
+                const typeString = this.getTypeString(parameterElement.literal);
                 let currentParamInfo = '';
                 if (typeof parameterElement.id !== 'undefined' && parameterElement.id !== null ) { // no name on return parameters
                     currentParamInfo = typeString + ' ' + parameterElement.id;
@@ -134,7 +137,7 @@ export class CompletionService {
         return completionItem;
     }
 
-    // type "Contract, Libray, Abstract contract"
+    // type "Contract"
     public createContractCompletionItem(contractName: string | undefined, type: string): CompletionItem {
         if (contractName == undefined) {
             return CompletionItem.create("");
@@ -245,9 +248,9 @@ export class CompletionService {
                 }
             })
 
-        } catch (error) {
+        } catch (error: any) {
             // graceful catch
-            //console.log(error);
+            //console.log(error.message);
         } finally {
             completionItems = completionItems.concat(GetCompletionTypes());
             completionItems = completionItems.concat(GetCompletionKeywords());
@@ -286,7 +289,6 @@ export class CompletionService {
         }
         
         let found = false;
-
         if (autocompleteByDot.isVariable) {
             allVariables.forEach(item => {
                 if (item.name === autocompleteByDot.name && !found) {
@@ -453,6 +455,14 @@ export class CompletionService {
                 completionItems.push(items[i]);
             }
         }
+
+        if (foundStruct !== undefined) {
+            const items = getStructCompletionItems();
+            for (let i in items) {
+                completionItems.push(items[i]);
+            }
+        }
+
     }
 
     private findDotType(allStructs: Struct[], allMessages: Message[], type: DeclarationType | undefined, autocompleteByDot: AutocompleteByDot, completionItems: any[], allContracts: Contract2[], currentContract: Contract2) {
@@ -742,11 +752,11 @@ export function GetGlobalFunctions(): CompletionItem[] {
             label: 'nativeThrow',
         },
         {
-            detail: 'Native throw when.',
-            insertText: 'nativeThrowWhen(${1:code}, ${2:condition})',
+            detail: 'Native throw if.',
+            insertText: 'nativeThrowIf(${1:code}, ${2:condition})',
             insertTextFormat: 2,
             kind: CompletionItemKind.Function,
-            label: 'nativeThrowWhen',
+            label: 'nativeThrowIf',
         },
         {
             detail: 'Throw.',
@@ -1264,6 +1274,25 @@ function getAddressCompletionItems(): CompletionItem[] {
     ];
 }
 
+function getStructCompletionItems(): CompletionItem[] {
+    return [
+        {
+            detail: 'Struct from Cell.',
+            kind: CompletionItemKind.Property,
+            insertText: "fromCell()",
+            insertTextFormat: 2,
+            label: 'fromCell',
+        },
+        {
+            detail: 'Struct from Slice.',
+            kind: CompletionItemKind.Property,
+            insertText: "fromSlice()",
+            insertTextFormat: 2,
+            label: 'fromSlice',
+        },
+    ];
+}
+
 function getIntCompletionItems(): CompletionItem[] {
     return [
         {
@@ -1502,6 +1531,13 @@ function getSliceCompletionItems(): CompletionItem[] {
             insertText: "loadUint(${1:Int})",
             insertTextFormat: 2,
             label: 'loadUint',
+        },
+        {
+            detail: 'Load Bool.',
+            kind: CompletionItemKind.Property,
+            insertText: "loadBool(${1:Bool})",
+            insertTextFormat: 2,
+            label: 'loadBool',
         },
         {
             detail: 'Preload Uint.',

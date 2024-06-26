@@ -297,7 +297,7 @@ export class Struct extends ParsedCode {
 
         if (this.element.body !== undefined) {
             this.element.body.forEach((structBodyElement: any) => {
-                if (structBodyElement.type === 'DeclarativeExpression'){
+                if (structBodyElement.type === 'DeclarativeExpression' || structBodyElement.type === 'StateVariableDeclaration') {
                     let variable = new StructVariable();
                     variable.element = structBodyElement;
                     variable.name = structBodyElement.name;
@@ -393,6 +393,11 @@ export class TactCodeWalker {
             if (contractItem !== contract) {
                 let contractsParsed = this.getContracts(contractItem.code);
                 documentContract.allContracts = documentContract.allContracts.concat(contractsParsed);
+            } else {
+                if (documentContract.selectedContract !== undefined ) {
+                    documentContract.selectedContract.messages = this.getMessages(contractItem.code);
+                    documentContract.selectedContract.structs = this.getStructs(contractItem.code);
+                }
             }
         });
 
@@ -451,5 +456,39 @@ export class TactCodeWalker {
       // console.log(error.message);
     }
     return contracts;
+  }
+
+  public getStructs(documentText: string): Struct[] {
+    let structs : Struct[] = [];
+    try {
+        const result = this.tactparser.parse(documentText, "");
+        result.body.forEach((element: any) => {
+            if (element.type === 'StructDeclaration') {
+                var struct = new Struct();
+                struct.initialise(element, new Contract2());
+                structs.push(struct);
+            }
+        });
+    } catch (error) {
+      // console.log(error.message);
+    }
+    return structs;
+  }
+
+  public getMessages(documentText: string): Message[] {
+    let messages : Message[] = [];
+    try {
+        const result = this.tactparser.parse(documentText, "");
+        result.body.forEach((element: any) => {
+            if (element.type === 'MessageStatement') {
+                var message = new Message();
+                message.initialise(element, new Contract2());
+                messages.push(message);
+            }
+        });
+    } catch (error) {
+      // console.log(error.message);
+    }
+    return messages;
   }
 }

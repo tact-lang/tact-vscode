@@ -11,7 +11,6 @@ const ForeachStatement = {
   [
     'foreach (',
     path.call(print, 'key'),
-    ' ',
     ',',
     ' ',
     path.call(print, 'value'),

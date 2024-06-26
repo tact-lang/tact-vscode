@@ -5,15 +5,17 @@ const expression = (node: any, path: any, print: any) => {
   if (node.argument == null && node.agrModificator != null) {
     return group(indent([line, path.map(print, 'agrModificator')]));
   }
-  return group(indent([line, path.call(print, 'argument')]));
+  if (node.argument != null) {
+    return group(indent([line, path.call(print, 'argument'), ';']));
+  }
+  return [';'];
 };
 
 const ReturnStatement = {
   print: ({ node, path, print }: any) => //JSON.stringify(node)
   [
     'return',
-    expression(node, path, print),
-    ';'
+    expression(node, path, print)
   ]
 };
 

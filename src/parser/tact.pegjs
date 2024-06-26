@@ -226,7 +226,7 @@ Literal
   / DenominationLiteral
   / NumericLiteral
   / StringLiteral
-  / VersionLiteral
+  // / VersionLiteral
 
 BooleanLiteral
   = TrueToken  { return { type: "Literal", value: true, start: location().start.offset, end: location().end.offset }; }
@@ -266,13 +266,13 @@ DenominationLiteral
 
 DecimalLiteral
   = DecimalIntegerLiteral "." DecimalDigit* ExponentPart? {
-      return { type: "Literal", value: parseFloat(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset };
+      return { type: "Literal", value: BigInt(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset };
     }
   / "." DecimalDigit+ ExponentPart? {
-      return { type: "Literal", value: parseFloat(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset };
+      return { type: "Literal", value: BigInt(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset };
     }
   / DecimalIntegerLiteral ExponentPart? {
-      return { type: "Literal", value: parseFloat(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset };
+      return { type: "Literal", value: BigInt(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset };
     }
 
 DecimalIntegerLiteral
@@ -520,7 +520,7 @@ __
 _
   = (WhiteSpace / MultiLineCommentNoLineTerminator)*
 
-EOS = __ ";"
+EOS = __ ";" / LineTerminator
 
 EOF
   = !.
@@ -801,12 +801,12 @@ StateVariableDeclaration
   }
 
 DeclarativeExpression
-  = LetToken __ id:Identifier __ ":" __ type:Type __ "as"? __ typePrimitive:Type? isoptional:"?"? 
+  = LetToken __ id:Identifier __ ":"? __ type:Type? __ "as"? __ typePrimitive:Type? isoptional:"?"? 
   {
     return {
       type: "DeclarativeExpression",
       name: id.name,
-      literal: type,
+      literal: type != null ? type: "",
       typePrimitive: typePrimitive != null ? typePrimitive: "",
       is_optional: isoptional != null,
       start: location().start.offset,
@@ -1097,15 +1097,6 @@ IncompleteBlock
         end: location().end.offset
       };
     } /
-    __ body:ReturnToken __ PrimaryExpression tail:(((".") / (  __ "=" __ ) / ( __ "=" __ NewToken __)) Identifier?)* __ ?
-    {
-      return {
-        type: "IncompleteStatement",
-        body:  text(),
-        start: location().start.offset,
-        end: location().end.offset
-      };
-    }  /
      __ body: PrimaryExpression tail:(((".") / (  __ "=" __ ) / ( __ "=" __ NewToken __)) Identifier?)* __ ?
     {
       return {
@@ -1118,7 +1109,7 @@ IncompleteBlock
   
 
 Block
-  = "{" __ body:(StatementList __)? "}" {
+  = "{" __ body:(LastExpressionStatement __/ StatementList __)? "}" {
       return {
         type: "BlockStatement",
         body: optionalList(extractOptional(body, 0)),
@@ -1128,7 +1119,9 @@ Block
     } 
 
 StatementList
-  = head:Statement tail:(__ Statement)* { return buildList(head, tail, 1); }
+  = head:Statement tail:(__ Statement)* {
+    return buildList(head, tail, 1);
+  }
 
 VariableStatement
   = modifier:((__ OverrideToken / __ AbstractToken / __ VirtualToken)*)? __ vartype:(LetToken / ConstantToken) __ declarations:VariableDeclarationList EOS {
@@ -1206,25 +1199,22 @@ ExpressionStatement
       };
     } 
 
-TryStatement 
-  = TryToken __ tryExpression: Expression tail:(((".") / (  __ "=" __ ) / ( __ "=" __ NewToken __)) Identifier?)* __ 
-    tryStatement:Statement __
-    catchStatements: (CatchStatements)*
-    {
-      return {
-         type:  "TryStatement",
-         tryExpression: tryExpression,
-         tryStatement: tryStatement,
-         catchStatements: catchStatements
-      };
+LastExpressionStatement
+  = !("{" / ContractToken / MessageToken / StructToken) expression:Expression !("}" / EOS)  {
+      return [{
+        type:       "ExpressionStatement",
+        expression: expression,
+        start: location().start.offset,
+        end: location().end.offset
+      }];
     } 
-    / TryToken __ tryExpression:Expression tail:(((".") / (  __ "=" __ ) / ( __ "=" __ NewToken __)) Identifier?)* tryStatement: Statement __
-      catchStatements:(CatchStatements)*
+
+TryStatement 
+  = TryToken __ tryStatement:FunctionBody __
+      catchStatements:(CatchStatements)?
     {
         return {
          type:  "TryStatement",
-         tryExpressionReturns: tryExpressionReturns,
-         tryExpression: tryExpression,
          tryStatement: tryStatement,
          catchStatements: catchStatements
       };
@@ -1237,23 +1227,17 @@ CatchStatements
     }
 
 CatchStatement
-  = CatchToken __ "(" __ param:InformalParameterList __ ")" __ body:Block {
+  = CatchToken __ "(" __ param:Identifier __ ")" __ body:FunctionBody __ {
       return {
         type: "CatchClause",
         param: param,
         body: body
       };
     } /
-    CatchToken __ body:Block {
+    CatchToken __ body:FunctionBody __ {
       return {
         type: "CatchClause",
-        body: body
-      };
-    } /
- CatchToken __ "Error" __ "(" __ param:InformalParameterList __ ")" __ body:Block {
-      return {
-        type: "CatchClause",
-        param: param,
+        param: null,
         body: body
       };
     }
@@ -1369,7 +1353,7 @@ IterationStatement
       };
     }
   / ForeachToken __
-    "(" __ key:IdentifierName __ "," __ value:IdentifierName __ "in" __ mapName:IdentifierName __ ")" __
+    "(" __ key:IdentifierName __ "," __ value:IdentifierName __ "in" __ mapName:Type __ ")" __
     body:Statement
     {
       return {
@@ -1409,12 +1393,20 @@ BreakStatement
     }
 
 ReturnStatement
-  = ReturnToken EOS {
+  = ReturnToken __ EOS {
       return { type: "ReturnStatement", argument: null, start: location().start.offset, end: location().end.offset };
     }
-  / ReturnToken __ agrModificator:Arguments? __ argument:Expression EOS {
-      return { type: "ReturnStatement", argument: argument, agrModificator: agrModificator != null ? agrModificator[0]: null, agrModificatorType: agrModificator != null ? agrModificator[1]: null, start: location().start.offset, end: location().end.offset };
+  / ReturnToken __ argument:Expression __ EOS {
+      return { type: "ReturnStatement", argument: argument, start: location().start.offset, end: location().end.offset };
     }
+  / ReturnToken __ argument:Expression {
+      return { type: "ReturnStatement", argument: argument, start: location().start.offset, end: location().end.offset };
+    }
+  / ReturnToken __ {
+      return { type: "ReturnStatement", argument: null, start: location().start.offset, end: location().end.offset };
+    }
+
+
 
 ThrowStatement
   = ThrowToken __ "(" __ code:NumericLiteral __ ")" EOS {
@@ -1733,6 +1725,9 @@ InformalParameter
 
 InformalParameterList
   = head:(InformalParameter / Literal/ __) tail:( __ "," __ (InformalParameter / Literal/ __))* {
+      if (head.length == 0) {
+        return null;
+      }
       return buildList(head, tail, 3);
     }
 
@@ -1797,13 +1792,3 @@ SourceElement
   / ReceiveDeclaration
   / ExternalDeclaration
   / OnBounceDeclaration
-
-ReturnOpCode
-  = 'return' {
-    return {
-      type: "Identifier",
-      name: "return",
-      start: location().start.offset,
-      end: location().end.offset
-    }
-  }

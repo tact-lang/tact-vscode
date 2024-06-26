@@ -3,6 +3,11 @@ const { group, indent, line } = doc.builders;
 
 import comparison from './comparison';
 
+const internalPosition = (path: any): boolean => {
+  const parentNode = path.getParentNode();
+  return parentNode.type === 'BinaryExpression' || parentNode.type === 'UnaryExpression';
+};
+
 const groupIfNecessaryBuilder = (path: any) => (doc: any) => {
   const parentNode = path.getParentNode();
   if (
@@ -35,19 +40,21 @@ export default {
   print: (node: any, path: any, print: any) => {
     const groupIfNecessary = groupIfNecessaryBuilder(path);
     const indentIfNecessary = indentIfNecessaryBuilder(path);
+    const ifInternalPosition: boolean = internalPosition(path);
 
     const right = [node.operator, line, path.call(print, 'right')];
+    
     // If it's a single binary operation, avoid having a small right
     // operand like - 1 on its own line
     const shouldGroup =
       node.left.type !== 'BinaryExpression' &&
       path.getParentNode().type !== 'BinaryExpression';
     return groupIfNecessary([
-      ['+','-'].includes(node.operator) ? "(": "",
+      ifInternalPosition ? "(": "",
       path.call(print, 'left'),
       ' ',
       indentIfNecessary(shouldGroup ? group(right) : right),
-      ['+','-'].includes(node.operator) ? ")": "",
+      ifInternalPosition ? ")": "",
     ]);
   }
 };

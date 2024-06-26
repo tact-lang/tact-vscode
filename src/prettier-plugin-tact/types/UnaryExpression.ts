@@ -4,9 +4,7 @@ const UnaryExpression = {
       ? [
           node.operator,
           node.operator === 'delete' ? ' ' : '',
-          '(',
           path.call(print, 'argument'),
-          ')'
         ]
       : [path.call(print, 'argument'), node.operator]
       
