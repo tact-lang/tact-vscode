@@ -6,32 +6,12 @@ import {
 } from 'vscode-languageclient/node';
 
 // tslint:disable-next-line:no-duplicate-imports
-import {
-    workspace, ExtensionContext, DiagnosticCollection,
-    languages, TextDocument, 
-    FormattingOptions, CancellationToken,
-    ProviderResult, TextEdit,
-    DocumentSelector
-} from 'vscode';
+import { workspace, ExtensionContext } from 'vscode';
 
-import { formatDocument } from './formatter';
-
-let diagnosticCollection: DiagnosticCollection;
 let clientDisposable: LanguageClient;
 
 export async function activate(context: ExtensionContext) {
     const ws = workspace.workspaceFolders;
-    diagnosticCollection = languages.createDiagnosticCollection('tact');
-
-    context.subscriptions.push(diagnosticCollection);
-
-    context.subscriptions.push(
-        languages.registerDocumentFormattingEditProvider('tact', {
-            provideDocumentFormattingEdits(document: TextDocument, options: FormattingOptions, token: CancellationToken): ProviderResult<TextEdit[]> {
-                return Promise.resolve(formatDocument(document, context));
-            },
-        })
-    );
 
     const serverModule = path.join(__dirname, './server.js');
 
