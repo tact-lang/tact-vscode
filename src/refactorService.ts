@@ -1,7 +1,7 @@
 'use strict';
 import { Position } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { Range, WorkspaceChange } from 'vscode-languageserver/node';
+import { Range, WorkspaceChange } from 'vscode-languageserver';
 
 export class RefactorService {
     
@@ -53,8 +53,13 @@ export class RefactorService {
 
         const wordObject = this.getWord(wordLine, range.start.character-1, [" ", "(", ")", "[", "]", ";", ",", "!", "+", "-", "*", ":", "{", "=", "&", "^", "%", "~"]);
 
+        const startLineText = document.getText({
+            start: { line: range.start.line, character: 0 },
+            end: { line: range.start.line, character: range.start.character }
+        }) || '';        
+        const indentation = startLineText.match(/^\s*/)?.[0] || '';
         const workspaceEdit = new WorkspaceChange();
-        workspaceEdit.getTextEditChange(document.uri).insert(Position.create(range.start.line+1, 0), `dump(${wordObject.word});\n`);
+        workspaceEdit.getTextEditChange(document.uri).insert(Position.create(range.start.line + 1, 0), `${indentation}dump(${wordObject.word});\n`);
         return workspaceEdit.edit;
     }
 

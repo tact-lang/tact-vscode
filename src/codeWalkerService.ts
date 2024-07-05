@@ -3,6 +3,7 @@ import { URI } from 'vscode-uri';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { ContractCollection } from './model/contractsCollection';
 import { Parser } from './parser/tact';
+import { DocumentStore } from './documentStore';
 
 export class ParsedCode {
     public element: any;
@@ -370,17 +371,19 @@ export class DocumentContract {
 export class TactCodeWalker {
   private rootPath: string | undefined;
   private tactparser = new Parser();
+  private documentStore: DocumentStore;
 
-  constructor(rootPath: string | undefined) {
+  constructor(rootPath: string | undefined, documentStore: DocumentStore) {
     this.rootPath = rootPath;
+    this.documentStore = documentStore;
   }
 
-  public getAllContracts(document: TextDocument, position: vscode.Position): DocumentContract {
+  public async getAllContracts(document: TextDocument, position: vscode.Position): Promise<DocumentContract> {
         let documentContract:DocumentContract = new DocumentContract();
         const documentText = document.getText();
         const contractPath = URI.parse(document.uri).fsPath;
-        const contracts = new ContractCollection();
-        contracts.addContractAndResolveImports(
+        const contracts = new ContractCollection(this.documentStore);
+        await contracts.addContractAndResolveImports(
             contractPath,
             documentText
         );

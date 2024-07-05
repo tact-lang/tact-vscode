@@ -1,11 +1,14 @@
 'use strict';
 import * as fs from 'fs';
 import {Contract} from './contract';
+import { DocumentStore } from '../documentStore';
 
 export class ContractCollection {
     public contracts: Array<Contract>;
-    constructor() {
+    private documentStore: DocumentStore;
+    constructor(documentStore: DocumentStore) {
         this.contracts = new Array<Contract>();
+        this.documentStore = documentStore;
     }
 
     public findContract(contract: Contract, contractPath: string) {
@@ -33,20 +36,25 @@ export class ContractCollection {
         return compilation;
     }
 
-    public addContractAndResolveImports(contractPath: string, code: string) {
+    public async addContractAndResolveImports(contractPath: string, code: string) {
         const contract = this.addContract(contractPath, code);
         if (contract !== null) {
             contract.resolveImports();
-            contract.imports.forEach(foundImport => {
+            
+            // Collect all the promises from the imports
+            const importPromises = contract.imports.map(async foundImport => {
                 if (fs.existsSync(foundImport)) {
                     if (!this.containsContract(foundImport)) {
-                        const importContractCode = this.readContractCode(foundImport);
-                        if (importContractCode != null) {
-                            this.addContractAndResolveImports(foundImport, importContractCode);
+                        const importContractCode = await this.readContractCode(foundImport);
+                        if (importContractCode.exists) {
+                            await this.addContractAndResolveImports(foundImport, importContractCode.document.getText());
                         }
                     }
                 }
             });
+            
+            // Wait for all the import promises to resolve
+            await Promise.all(importPromises);
         }
         return contract;
     }
@@ -60,10 +68,7 @@ export class ContractCollection {
         return null;
     }
 
-    private readContractCode(contractPath: string) {
-        if (fs.existsSync(contractPath)) {
-            return fs.readFileSync(contractPath, 'utf8');
-        }
-        return null;
+    private async readContractCode(contractPath: string) {
+        return await this.documentStore.retrieve(contractPath);
     }
 }
