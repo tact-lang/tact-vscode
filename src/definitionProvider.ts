@@ -6,12 +6,15 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Contract } from './model/contract';
 import { ContractCollection } from './model/contractsCollection';
 import { Parser } from './parser/tact';
+import { DocumentStore } from './documentStore';
 const tactparse = new Parser();
 export class TactDefinitionProvider {
   private rootPath: string | undefined;
+  private documentStore: DocumentStore;
 
-  constructor(rootPath: string | undefined) {
+  constructor(rootPath: string | undefined, documentStore: DocumentStore) {
     this.rootPath = rootPath;
+    this.documentStore = documentStore;
   }
 
   /**
@@ -24,15 +27,14 @@ export class TactDefinitionProvider {
    * @returns {(Thenable<vscode.Location | vscode.Location[]>)}
    * @memberof TactDefinitionProvider
    */
-  public provideDefinition(
+   public async provideDefinition(
     document: TextDocument,
     position: vscode.Position,
-  ): Thenable<vscode.Location | vscode.Location[] | undefined> | undefined {
+  ): Promise<vscode.Location | vscode.Location[] | undefined>  {
     const documentText = document.getText();
     const contractPath = URI.parse(document.uri).fsPath;
-
-    const contracts = new ContractCollection();
-    contracts.addContractAndResolveImports(
+    const contracts = new ContractCollection(this.documentStore);
+    await contracts.addContractAndResolveImports(
       contractPath,
       documentText
     );

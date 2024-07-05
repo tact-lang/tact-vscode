@@ -4,12 +4,15 @@ import * as fs from 'fs';
 import { errorToDiagnostic } from './tactErrorsToDiagnostics';
 import { ContractCollection } from './model/contractsCollection';
 import { check, createVirtualFileSystem, CheckResult, CheckResultItem } from '@tact-lang/compiler';
+import { DocumentStore } from './documentStore';
 export class TactCompiler {
 
     public rootPath: string;
+    private documentStore: DocumentStore;
 
-    constructor(rootPath: string) {
+    constructor(rootPath: string, documentStore: DocumentStore) {
         this.rootPath = rootPath;
+        this.documentStore = documentStore;
     }
 
     public isRootPathSet(): boolean {
@@ -38,7 +41,7 @@ export class TactCompiler {
             };
         }
 
-        const pathKey = path.relative( this.rootPath, args.file).replaceAll('\\','/');
+        const pathKey = args.file.replaceAll('\\','/');
 
         let rootPath = this.rootPath;
 
@@ -47,9 +50,10 @@ export class TactCompiler {
             rootPath = path.dirname(args.file);
         }
 
-        const pathContent = fs.readFileSync(pathKey);
+        const document = await this.documentStore.retrieve(pathKey);
+        let pathContent = (document.document)?.getText() || "";
         const fsObject = {} as any;
-                fsObject[pathKey] = pathContent.toString('base64');
+                fsObject[pathKey] = btoa(pathContent);
             for (let pathKey in args.sources) {
                 const fileContent = args.sources[pathKey].content || args.sources[pathKey];
                 fsObject[path.relative( rootPath, pathKey).replaceAll('\\','/')] = Buffer.from(fileContent).toString('base64');
@@ -82,8 +86,8 @@ export class TactCompiler {
 
     public async compileTactDocumentAndGetDiagnosticErrors(filePath: string, documentText: string) {
         if (this.isRootPathSet()) {
-            const contracts = new ContractCollection();
-            contracts.addContractAndResolveImports(filePath, documentText);
+            const contracts = new ContractCollection(this.documentStore);
+            await contracts.addContractAndResolveImports(filePath, documentText);
             const contractsForCompilation = contracts.getDefaultContractsForCompilationDiagnostics();
             const output = await this.compile(contractsForCompilation);
             if (output) {

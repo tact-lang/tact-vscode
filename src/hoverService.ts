@@ -2,18 +2,21 @@
 import { Position } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { TactCodeWalker, Variable } from './codeWalkerService';
-import { MarkupContent, MarkupKind } from 'vscode-languageserver/node';
+import { MarkupContent, MarkupKind } from 'vscode-languageserver';
+import { DocumentStore } from './documentStore';
 
 export class HoverService {
     
     public rootPath: string | undefined;
+    private documentStore: DocumentStore;
 
-    constructor(rootPath: string | undefined) {
+    constructor(rootPath: string | undefined, documentStore: DocumentStore) {
         this.rootPath = rootPath;
+        this.documentStore = documentStore;
     }
 
-    public getHoverItems( document: TextDocument | undefined,
-                          position: Position): MarkupContent {
+    public async getHoverItems( document: TextDocument | undefined,
+                          position: Position): Promise<MarkupContent> {
         if (document == undefined) {
             return {
                 kind: MarkupKind.Markdown,
@@ -33,10 +36,10 @@ export class HoverService {
                 };
         }
 
-        var walker = new TactCodeWalker(this.rootPath);
+        var walker = new TactCodeWalker(this.rootPath, this.documentStore);
         const offset = document.offsetAt(position);
 
-        var documentContractSelected = walker.getAllContracts(document, position);
+        var documentContractSelected = await walker.getAllContracts(document, position);
 
         let variableType: string | undefined = "global";
         if (documentContractSelected != undefined && documentContractSelected.selectedContract != undefined) {

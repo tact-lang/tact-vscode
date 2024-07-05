@@ -6,7 +6,7 @@ import {
 } from 'vscode-languageclient/node';
 
 // tslint:disable-next-line:no-duplicate-imports
-import { workspace, ExtensionContext } from 'vscode';
+import { workspace, ExtensionContext, Uri, window, FileSystemError } from 'vscode';
 
 let clientDisposable: LanguageClient;
 
@@ -53,6 +53,22 @@ export async function activate(context: ExtensionContext) {
         });
 
         clientDisposable.start();
+
+        clientDisposable.onReady().then(() => {
+            clientDisposable.onRequest('file/read', async raw => {
+                const uri = Uri.parse(raw);
+                try {
+                    const content = await workspace.fs.readFile(uri);
+                    return { type: 'success', content: content.toString() };
+                } catch (error) {
+                    if (error instanceof FileSystemError) {
+                        return { type: 'error', message: 'File not found'};
+                    }
+                    console.warn(error);
+                    return { type: 'error', message: 'Unknown error'};
+                }
+            });
+        })
     }
 }
 
