@@ -453,7 +453,15 @@ export class TactCodeWalker {
             }
         });
     } catch (error) {
-      // console.log(error.message);
+        // console.log(error.message);
+        const result = this.tactparser.getPrevResult();
+        result.body.forEach((element: any) => {
+            if (element.type === 'ContractStatement' || element.type == 'InterfaceStatement') {
+                var contract = new Contract2();
+                contract.initialise(element);
+                contracts.push(contract);
+            }
+        });
     }
     return contracts;
   }
@@ -470,7 +478,15 @@ export class TactCodeWalker {
             }
         });
     } catch (error) {
-      // console.log(error.message);
+        // console.log(error.message);
+        const result = this.tactparser.getPrevResult();
+        result.body.forEach((element: any) => {
+            if (element.type === 'StructDeclaration') {
+                var struct = new Struct();
+                struct.initialise(element, new Contract2());
+                structs.push(struct);
+            }
+        });
     }
     return structs;
   }
@@ -487,7 +503,15 @@ export class TactCodeWalker {
             }
         });
     } catch (error) {
-      // console.log(error.message);
+        // console.log(error.message);
+        const result = this.tactparser.getPrevResult();
+        result.body.forEach((element: any) => {
+            if (element.type === 'MessageStatement') {
+                var message = new Message();
+                message.initialise(element, new Contract2());
+                messages.push(message);
+            }
+        });
     }
     return messages;
   }

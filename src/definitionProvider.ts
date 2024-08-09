@@ -40,7 +40,12 @@ export class TactDefinitionProvider {
     // this contract
     const contract = contracts.contracts[0];
     const offset = document.offsetAt(position);
-    const result: any = tactparse.parse(documentText, contractPath);
+    let result: any;
+    try {
+      result = tactparse.parse(documentText, contractPath);
+    } catch(e) {
+      result = tactparse.getPrevResult();
+    }
     const element = this.findElementByOffset(result.body, offset);
 
     if (element !== undefined) {
@@ -313,7 +318,12 @@ export class TactDefinitionProvider {
     const locations: vscode.Location[] = [];
     for (const contract of contracts.contracts) {
 
-      const result = tactparse.parse(contract.code, contract.absolutePath);
+      let result;
+      try {
+        result = tactparse.parse(contract.code, contract.absolutePath);
+      } catch(e) {
+        result = tactparse.getPrevResult();
+      }
       const elements =  Array.prototype.concat.apply([],
         result.body.map((element: any) => {
           if (element.type === 'ContractStatement') {
@@ -448,7 +458,11 @@ export class TactDefinitionProvider {
       const importContract = contracts.contracts.find(e => e.absolutePath === importPath);
       const uri = URI.file(importContract?.absolutePath ?? "").toString();
       document = TextDocument.create(uri, "", 0, importContract?.code ?? "");
-      statements = tactparse.parse(importContract?.code ?? "", importContract?.absolutePath ?? "").body;
+      try {
+        statements = tactparse.parse(importContract?.code ?? "", importContract?.absolutePath ?? "").body;
+      } catch(e) {
+        statements = tactparse.getPrevResult();
+      }
       location = this.findStatementLocationByNameType(document, statements, name, type);
     }
 

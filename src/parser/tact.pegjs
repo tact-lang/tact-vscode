@@ -1246,8 +1246,8 @@ CatchStatement
 IfStatement
   = IfToken __ "("? __ test:Expression __ ")"? __
     consequent:Statement __
-    ElseToken __
-    alternate:Statement
+    ElseToken __ "{"? __
+    alternate:Statement __ "}"? __
     {
       return {
         type:       "IfStatement",

@@ -4,7 +4,7 @@
   "description": "Tact language (for .tact file) extension to use together with Tact compiler for Visual Studio Code to develop smart contract for TON blockchain",
   "publisher": "KonVik",
   "icon": "icons/logo.png",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "keywords": [
     "tact",
     "blockchain",
@@ -48,7 +48,7 @@
     "build": "vsce package"
   },
   "dependencies": {
-    "@tact-lang/compiler": "^1.4.0",
+    "@tact-lang/compiler": "^1.4.1",
     "ajv": "^6.10.2",
     "ajv-keywords": "^3.4.1",
     "ast-parents": "0.0.1",

@@ -6,6 +6,7 @@ import * as path from "path";
 import tact from "./build/parser";
 
 export class Parser {
+    private prevResult: any;
     public getParser (rebuild: boolean) {
         if (rebuild == true) {
             let parserfile = fs.readFileSync(path.resolve("./tact.pegjs"), {encoding: "utf8"});
@@ -27,6 +28,7 @@ export class Parser {
         let result;
         try {
             result = parser.parse(source);
+            this.prevResult = result;
         } catch (e: any) {
             if (e) {
                 e.message += " Contract: " + contractPath + " at Line: " + e.location.start.line + ", Column: " + e.location.start.column;
@@ -39,6 +41,10 @@ export class Parser {
         }
 
         return result;
+    }
+
+    public getPrevResult () {
+        return this.prevResult;
     }
 
     public parseFile(file: string, rebuild: boolean) {
