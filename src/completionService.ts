@@ -1313,14 +1313,14 @@ function getMapCompletionItems(): CompletionItem[] {
         {
             detail: 'Get element',
             kind: CompletionItemKind.Property,
-            insertText: "get()",
+            insertText: "get(${1:key})",
             insertTextFormat: 2,
             label: 'get',
         },
         {
             detail: 'Set element',
             kind: CompletionItemKind.Property,
-            insertText: "set()",
+            insertText: "set(${1:key}, ${2:value})",
             insertTextFormat: 2,
             label: 'set',
         },
@@ -1337,6 +1337,20 @@ function getMapCompletionItems(): CompletionItem[] {
             insertText: "isEmpty()",
             insertTextFormat: 2,
             label: 'isEmpty',
+        },
+        {
+            detail: 'Key exists',
+            kind: CompletionItemKind.Property,
+            insertText: "exists()",
+            insertTextFormat: 2,
+            label: 'exists',
+        },
+        {
+            detail: 'Deep equality check',
+            kind: CompletionItemKind.Property,
+            insertText: "deepEquals(${1:anotherMap})",
+            insertTextFormat: 2,
+            label: 'deepEquals',
         },
     ]
 }
