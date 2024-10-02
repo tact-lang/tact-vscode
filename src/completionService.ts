@@ -328,6 +328,15 @@ export class CompletionService {
                 case "Context":
                     items = getContextCompletionItems();
                     break;
+                case "StdAddress":
+                    items = getStdAddressCompletionItems();
+                    break;
+                case "VarAddress":
+                    items = getVarAddressCompletionItems();
+                    break;
+                case "SendParameters":
+                    items = getSendParametersCompletionItems();
+                    break;
                 case "Int":
                     items = getIntCompletionItems();
                     break;
@@ -444,6 +453,27 @@ export class CompletionService {
 
         if (type?.name == 'Context') {
             const items = getContextCompletionItems();
+            for (let i in items) {
+                completionItems.push(items[i]);
+            }
+        }
+
+        if (type?.name == 'StdAddress') {
+            const items = getStdAddressCompletionItems();
+            for (let i in items) {
+                completionItems.push(items[i]);
+            }
+        }
+
+        if (type?.name == 'StdAddress') {
+            const items = getStdAddressCompletionItems();
+            for (let i in items) {
+                completionItems.push(items[i]);
+            }
+        }
+
+        if (type?.name == 'SendParameters') {
+            const items = getSendParametersCompletionItems();
             for (let i in items) {
                 completionItems.push(items[i]);
             }
@@ -585,7 +615,7 @@ export class CompletionService {
 
 export function GetCompletionTypes(): CompletionItem[] {
     const completionItems: CompletionItem[] = [];
-    const types = ["Context", "Int", "Bool", "Builder", "Slice", "Cell", "Address", "String", "StringBuilder", "StateInit"];
+    const types = ["Context", "StdAddress", "VarAddress", "SendParameters", "Int", "Bool", "Builder", "Slice", "Cell", "Address", "String", "StringBuilder", "StateInit"];
     types.forEach(type => {
         const completionItem =  CompletionItem.create(type);
         completionItem.kind = CompletionItemKind.Keyword;
@@ -608,7 +638,7 @@ export function GetCompletionKeywords(): CompletionItem[] {
     const keywords = [ "as", "break", "continue", "initOf", 
         "init", "receive", "bounced", "delete", "do", "else", "error", "false", "repeat", "from", 
         "fun", "get", "if", "try", "catch", "with", "import", "interface", "message", "map", "new", 
-        "null", "return", "struct", "super", "self", "throw", "true", "ton", "while"];
+        "null", "return", "struct", "super", "self", "throw", "true", "while"];
     keywords.forEach(unit => {
         const completionItem =  CompletionItem.create(unit);
         completionItem.kind = CompletionItemKind.Keyword;
@@ -682,6 +712,11 @@ export function GetGlobalVariables(): CompletionItem[] {
             label: 'SendBounceIfActionFail',
         },
         {
+            detail: 'Int 1024',
+            kind: CompletionItemKind.Variable,
+            label: 'SendOnlyEstimateFee',
+        },
+        {
             detail: 'Int 0',
             kind: CompletionItemKind.Variable,
             label: 'ReserveExact',
@@ -717,11 +752,25 @@ export function GetGlobalVariables(): CompletionItem[] {
 export function GetGlobalFunctions(): CompletionItem[] {
     return [
         {
-            detail: 'Get context.',
+            detail: 'Get Context.',
             insertText: 'context()',
             insertTextFormat: 2,
             kind: CompletionItemKind.Function,
             label: 'context',
+        },
+        {
+            detail: 'Parse StdAddress from a Slice.',
+            insertText: 'parseStdAddress(${1:slice})',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'parseStdAddress',
+        },
+        {
+            detail: 'Parse VarAddress from a Slice.',
+            insertText: 'parseVarAddress(${1:slice})',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'parseVarAddress',
         },
         {
             detail: 'Get config parameters.',
@@ -896,6 +945,8 @@ let CascadeAssociativeArray: {[propKey: string]: string} = {
     "contractAddressExt": "Address",
     "cell": "Cell",
     "context": "Context",
+    "parseStdAddress": "StdAddress",
+    "parseVarAddress": "VarAddress",
     "beginString": "StringBuilder",
     "beginComment": "StringBuilder",
     "beginTailString": "StringBuilder",
@@ -1155,6 +1206,76 @@ function getMathCompletionItems(): CompletionItem[] {
             label: 'log',
         },
     ]
+}
+
+function getStdAddressCompletionItems(): CompletionItem[] {
+    return [
+        {
+            detail: 'Int as int8',
+            kind: CompletionItemKind.Property,
+            label: 'workchain',
+        },
+        {
+            detail: 'Int as uint256',
+            kind: CompletionItemKind.Property,
+            label: 'address',
+        },
+    ];
+}
+
+function getVarAddressCompletionItems(): CompletionItem[] {
+    return [
+        {
+            detail: 'Int as int32',
+            kind: CompletionItemKind.Property,
+            label: 'workchain',
+        },
+        {
+            detail: 'Slice',
+            kind: CompletionItemKind.Property,
+            label: 'address',
+        },
+    ];
+}
+
+function getSendParametersCompletionItems(): CompletionItem[] {
+    return [
+        {
+            detail: 'Bool, defaults to true',
+            kind: CompletionItemKind.Property,
+            label: 'bounce',
+        },
+        {
+            detail: 'Address',
+            kind: CompletionItemKind.Property,
+            label: 'to',
+        },
+        {
+            detail: 'Int',
+            kind: CompletionItemKind.Property,
+            label: 'value',
+        },
+        {
+            detail: 'Int, defaults to 0',
+            kind: CompletionItemKind.Property,
+            label: 'mode',
+        },
+        {
+            detail: 'Cell?',
+            kind: CompletionItemKind.Property,
+            label: 'body',
+        },
+        {
+            detail: 'Cell?',
+            kind: CompletionItemKind.Property,
+            label: 'code',
+        },
+        {
+            detail: 'Cell?',
+            kind: CompletionItemKind.Property,
+            label: 'data',
+        },
+    ];
 }
 
 function getContextCompletionItems(): CompletionItem[] {
