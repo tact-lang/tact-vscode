@@ -635,7 +635,7 @@ function CreateCompletionItem(label: string, kind: CompletionItemKind, detail: s
 
 export function GetCompletionKeywords(): CompletionItem[] {
     const completionItems = [];
-    const keywords = [ "as", "break", "continue", "initOf", 
+    const keywords = [ "as", "asm", "break", "continue", "initOf",
         "init", "receive", "bounced", "delete", "do", "else", "error", "false", "repeat", "from", 
         "fun", "get", "if", "try", "catch", "with", "import", "interface", "message", "map", "new", 
         "null", "return", "struct", "super", "self", "throw", "true", "while"];
