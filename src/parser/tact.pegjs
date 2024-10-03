@@ -143,10 +143,10 @@ LineTerminatorSequence "end of line"
   / "\u2028"
   / "\u2029"
 
-SingleWhiteSpace
+SingleWhiteSpace "whitespace"
   = WhiteSpace / LineTerminator
 
-SingleNonWhiteSpace
+SingleNonWhiteSpace "non-whitespace character"
   = [^\n\r\u2028\u2029 \t\v\f\u00A0\uFEFF\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
 
 Comment "comment"
@@ -284,6 +284,10 @@ DecimalLiteral
 DecimalIntegerLiteral
   = "0"
   / NonZeroDigit DecimalDigit*
+
+DecimalIntegerLiteralAsNumber
+  = "0" [0-9]* { return { type: "Literal", value: BigInt(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset }; }
+  / [1-9] ("_"? [0-9])* { return { type: "Literal", value: BigInt(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset }; }
 
 DecimalDigit
   = [0-9_]
@@ -1761,7 +1765,7 @@ InformalParameterList
     }
 
 AsmArrangement
-  = "(" __ args:Identifier* __ rets:("->" __ DecimalIntegerLiteral+)? __ ")"
+  = "(" __ args:AsmArrangementArgs? __ rets:("->" __ AsmArrangementRets)? __ ")"
   {
     return {
       type: "AsmArrangement",
@@ -1772,17 +1776,32 @@ AsmArrangement
     };
   }
 
-// This shouldn't produce parser action, as the value of this body is discarded
-// in the AsmFunction rule and it won't be used for formatting since its best to
-// leave its formatting to the end user
+AsmArrangementArgs
+  = head:Identifier tail:(__ Identifier)* {
+      return buildList(head, tail, 1);
+    }
+    
+AsmArrangementRets
+  = head:DecimalIntegerLiteralAsNumber tail:(__ DecimalIntegerLiteralAsNumber)* {
+      return buildList(head, tail, 1);
+    }
+
+// Won't be used for formatting since its best to
+// leave its formatting to the end user, and thus, the whole text is returned at once
 AsmFunctionBody
-  = "{" __ (AsmInstruction SingleWhiteSpace __)* "}"
+  = "{" __ (AsmInstruction SingleWhiteSpace __)* "}" { return text(); }
 
 AsmInstruction
   = "{" SingleWhiteSpace __ (AsmInstruction SingleWhiteSpace __)* "}"
   / ('abort"' / '."' / '+"' / '"') DoubleStringCharacter* '"'
   / "char" SingleWhiteSpace __ SingleNonWhiteSpace
-  / SingleNonWhiteSpace+
+  / AsmWordNonBrace
+
+AsmWordNonBrace
+  = !(("{" / "}") !AsmWord) AsmWord
+
+AsmWord
+  = SingleNonWhiteSpace+
 
 FunctionBody
   = "{" __ body:Statements? __ "}" {

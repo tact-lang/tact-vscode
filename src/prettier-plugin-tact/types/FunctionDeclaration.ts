@@ -53,7 +53,7 @@ const FunctionDefinition = {
             '(',
             node.arrangement.args?.join(' ') ?? '',
             node.arrangement.rets
-              ? '->' + node.arrangement.rets.join(' ')
+              ? ' -> ' + node.arrangement.rets.map((x: any) => x.value.toString(10)).join(' ')
               : '',
             ')',
           ])
