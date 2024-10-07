@@ -7,3 +7,4 @@ src/**
 *.vsix
 .gitignore
 tsconfig.json
+/samples

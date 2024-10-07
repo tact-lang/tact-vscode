@@ -143,6 +143,12 @@ LineTerminatorSequence "end of line"
   / "\u2028"
   / "\u2029"
 
+SingleWhiteSpace "whitespace"
+  = WhiteSpace / LineTerminator
+
+SingleNonWhiteSpace "non-whitespace character"
+  = [^\n\r\u2028\u2029 \t\v\f\u00A0\uFEFF\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
+
 Comment "comment"
   = MultiLineComment
   / SingleLineComment
@@ -220,7 +226,7 @@ Keyword
   / WhileToken
   / TryToken
   / CatchToken
-  
+
 Literal
   = BooleanLiteral
   / DenominationLiteral
@@ -245,8 +251,8 @@ NumericLiteral "number"
     }
 
 Denomination
-  = token:(  
-  TonToken     
+  = token:(
+  TonToken
   )
   {
     return token[0];
@@ -278,6 +284,10 @@ DecimalLiteral
 DecimalIntegerLiteral
   = "0"
   / NonZeroDigit DecimalDigit*
+
+DecimalIntegerLiteralAsNumber
+  = "0" [0-9]* { return { type: "Literal", value: BigInt(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset }; }
+  / [1-9] ("_"? [0-9])* { return { type: "Literal", value: BigInt(text().replaceAll('_', '')), start: location().start.offset, end: location().end.offset }; }
 
 DecimalDigit
   = [0-9_]
@@ -450,6 +460,7 @@ Zs = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
 /* Tokens */
 LetToken        = "let"        !IdentifierPart
 AsToken         = "as"         !IdentifierPart
+AsmToken        = "asm"        !IdentifierPart
 BreakToken      = "break"      !IdentifierPart
 ConstantToken   = "const"      !IdentifierPart
 ContinueToken   = "continue"   !IdentifierPart
@@ -457,7 +468,7 @@ InitOfToken     = "initOf"     !IdentifierPart
 ContractToken   = "contract"   !IdentifierPart
 InitToken       = "init"       !IdentifierPart
 ReceiveToken    = "receive"    !IdentifierPart
-ExternalToken   = "external"    !IdentifierPart
+ExternalToken   = "external"   !IdentifierPart
 OnBounceToken   = "bounced"    !IdentifierPart
 DeleteToken     = "delete"     !IdentifierPart
 DoToken         = "do"         !IdentifierPart
@@ -730,7 +741,7 @@ LeftHandSideExpression
   / InitOfExpression
 
 Primitive
-  = ContextToken 
+  = ContextToken
   / IntToken
   / BoolToken
   / BuilderToken
@@ -778,13 +789,13 @@ StateMutabilitySpecifier
       };
     }
 
-StateVariableValue 
+StateVariableValue
   = "=" __ expression:Expression {
     return expression;
   }
 
 StateVariableDeclaration
-  = modifier:((__ OverrideToken / __ AbstractToken / __ VirtualToken)*)? __ isconst:ConstantToken? __ id:Identifier __ ":" __ type:Type __ "as"? __ typePrimitive:Type? isoptional:"?"? __ value:StateVariableValue? __  EOS  
+  = modifier:((__ OverrideToken / __ AbstractToken / __ VirtualToken)*)? __ isconst:ConstantToken? __ id:Identifier __ ":" __ type:Type __ "as"? __ typePrimitive:Type? isoptional:"?"? __ value:StateVariableValue? __  EOS
   {
     return {
       type: "StateVariableDeclaration",
@@ -801,7 +812,7 @@ StateVariableDeclaration
   }
 
 DeclarativeExpression
-  = LetToken __ id:Identifier __ ":"? __ type:Type? __ "as"? __ typePrimitive:Type? isoptional:"?"? 
+  = LetToken __ id:Identifier __ ":"? __ type:Type? __ "as"? __ typePrimitive:Type? isoptional:"?"?
   {
     return {
       type: "DeclarativeExpression",
@@ -1055,7 +1066,7 @@ Statements
     }
 
 Statement
-  =  
+  =
   Block
   / EmptyStatement
   / ExpressionStatement
@@ -1069,12 +1080,12 @@ Statement
   / ThrowStatement
   / IncompleteBlock
   / VariableStatement
- 
-  
+
+
 IncompleteBlock
-  = !( 
+  = !(
   TryStatement
-  / Block 
+  / Block
   / EmptyStatement
   / ExpressionStatement
   / PlaceholderStatement
@@ -1086,7 +1097,7 @@ IncompleteBlock
   / ReturnStatement
   / ThrowStatement
   / VariableStatement
- )  
+ )
 
   PrimaryExpression tail:(((".") / (  __ "=" __ ) / ( __ "=" __ NewToken __)) Identifier?)* __ ?
     {
@@ -1105,8 +1116,8 @@ IncompleteBlock
         start: location().start.offset,
         end: location().end.offset
       };
-    } 
-  
+    }
+
 
 Block
   = "{" __ body:(LastExpressionStatement __/ StatementList __)? "}" {
@@ -1116,7 +1127,7 @@ Block
         start: location().start.offset,
         end: location().end.offset
       };
-    } 
+    }
 
 StatementList
   = head:Statement tail:(__ Statement)* {
@@ -1197,7 +1208,7 @@ ExpressionStatement
         start: location().start.offset,
         end: location().end.offset
       };
-    } 
+    }
 
 LastExpressionStatement
   = !("{" / ContractToken / MessageToken / StructToken) expression:Expression !("}" / EOS)  {
@@ -1207,9 +1218,9 @@ LastExpressionStatement
         start: location().start.offset,
         end: location().end.offset
       }];
-    } 
+    }
 
-TryStatement 
+TryStatement
   = TryToken __ tryStatement:FunctionBody __
       catchStatements:(CatchStatements)?
     {
@@ -1218,8 +1229,8 @@ TryStatement
          tryStatement: tryStatement,
          catchStatements: catchStatements
       };
-    } 
-    
+    }
+
 
 CatchStatements
   = head:CatchStatement tail:(__ CatchStatement)* {
@@ -1241,7 +1252,7 @@ CatchStatement
         body: body
       };
     }
-    
+
 
 IfStatement
   = IfToken __ "("? __ test:Expression __ ")"? __
@@ -1505,6 +1516,28 @@ FunctionDeclaration
         end: location().end.offset
       };
     }
+  / AsmToken __ arrangement:AsmArrangement? __ is_extends:ExtendsToken? __ is_mutates:MutatesToken? __ is_abstract:AbstractToken? __ is_public:PublicToken? __ FunctionToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ body:AsmFunctionBody __ EOS?
+    {
+      return {
+        type: "FunctionDeclaration",
+        idNative: "",
+        name: fnname.name,
+        params: fnname.params,
+        returns: returns,
+        modifier: [],
+        is_initOf: false,
+        is_native: false,
+        is_asm: true,
+        arrangement: arrangement,
+        body: body,
+        is_extends: is_extends != null,
+        is_mutates: is_mutates != null,
+        is_public: is_public != null,
+        is_abstract: is_abstract != null,
+        start: location().start.offset,
+        end: location().end.offset
+      }
+    }
   / "@name(" __ id_native:Identifier __ ")" LineTerminator
     __ is_extends:ExtendsToken? __ is_mutates:MutatesToken? __ is_public:PublicToken? __ NativeToken __ fnname:FunctionName __ returns:ReturnsDeclarations? __ EOS
     {
@@ -1717,7 +1750,7 @@ InformalParameter
       type: "InformalParameter",
       literal: type,
       id: id ? id.name : null,
-      is_optional: isoptional != null,  
+      is_optional: isoptional != null,
       start: location().start.offset,
       end: location().end.offset
     };
@@ -1731,6 +1764,44 @@ InformalParameterList
       return buildList(head, tail, 3);
     }
 
+AsmArrangement
+  = "(" __ args:AsmArrangementArgs? __ rets:("->" __ AsmArrangementRets)? __ ")"
+  {
+    return {
+      type: "AsmArrangement",
+      args: args != null ? args : [],
+      rets: rets != null ? rets[2] : [],
+      start: location().start.offset,
+      end: location().end.offset
+    };
+  }
+
+AsmArrangementArgs
+  = head:Identifier tail:(__ Identifier)* {
+      return buildList(head, tail, 1);
+    }
+    
+AsmArrangementRets
+  = head:DecimalIntegerLiteralAsNumber tail:(__ DecimalIntegerLiteralAsNumber)* {
+      return buildList(head, tail, 1);
+    }
+
+// Won't be used for formatting since its best to
+// leave its formatting to the end user, and thus, the whole text is returned at once
+AsmFunctionBody
+  = "{" __ (AsmInstruction SingleWhiteSpace __)* "}" { return text(); }
+
+AsmInstruction
+  = "{" SingleWhiteSpace __ (AsmInstruction SingleWhiteSpace __)* "}"
+  / ('abort"' / '."' / '+"' / '"') DoubleStringCharacter* '"'
+  / "char" SingleWhiteSpace __ SingleNonWhiteSpace
+  / AsmWordNonBrace
+
+AsmWordNonBrace
+  = !(("{" / "}") !AsmWord) AsmWord
+
+AsmWord
+  = SingleNonWhiteSpace+
 
 FunctionBody
   = "{" __ body:Statements? __ "}" {

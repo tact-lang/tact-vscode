@@ -328,6 +328,15 @@ export class CompletionService {
                 case "Context":
                     items = getContextCompletionItems();
                     break;
+                case "StdAddress":
+                    items = getStdAddressCompletionItems();
+                    break;
+                case "VarAddress":
+                    items = getVarAddressCompletionItems();
+                    break;
+                case "SendParameters":
+                    items = getSendParametersCompletionItems();
+                    break;
                 case "Int":
                     items = getIntCompletionItems();
                     break;
@@ -444,6 +453,27 @@ export class CompletionService {
 
         if (type?.name == 'Context') {
             const items = getContextCompletionItems();
+            for (let i in items) {
+                completionItems.push(items[i]);
+            }
+        }
+
+        if (type?.name == 'StdAddress') {
+            const items = getStdAddressCompletionItems();
+            for (let i in items) {
+                completionItems.push(items[i]);
+            }
+        }
+
+        if (type?.name == 'StdAddress') {
+            const items = getStdAddressCompletionItems();
+            for (let i in items) {
+                completionItems.push(items[i]);
+            }
+        }
+
+        if (type?.name == 'SendParameters') {
+            const items = getSendParametersCompletionItems();
             for (let i in items) {
                 completionItems.push(items[i]);
             }
@@ -585,7 +615,7 @@ export class CompletionService {
 
 export function GetCompletionTypes(): CompletionItem[] {
     const completionItems: CompletionItem[] = [];
-    const types = ["Context", "Int", "Bool", "Builder", "Slice", "Cell", "Address", "String", "StringBuilder", "StateInit"];
+    const types = ["Context", "StdAddress", "VarAddress", "SendParameters", "Int", "Bool", "Builder", "Slice", "Cell", "Address", "String", "StringBuilder", "StateInit"];
     types.forEach(type => {
         const completionItem =  CompletionItem.create(type);
         completionItem.kind = CompletionItemKind.Keyword;
@@ -605,10 +635,10 @@ function CreateCompletionItem(label: string, kind: CompletionItemKind, detail: s
 
 export function GetCompletionKeywords(): CompletionItem[] {
     const completionItems = [];
-    const keywords = [ "as", "break", "continue", "initOf", 
+    const keywords = [ "as", "asm", "break", "continue", "initOf",
         "init", "receive", "bounced", "delete", "do", "else", "error", "false", "repeat", "from", 
         "fun", "get", "if", "try", "catch", "with", "import", "interface", "message", "map", "new", 
-        "null", "return", "struct", "super", "self", "throw", "true", "ton", "while"];
+        "null", "return", "struct", "super", "self", "throw", "true", "while"];
     keywords.forEach(unit => {
         const completionItem =  CompletionItem.create(unit);
         completionItem.kind = CompletionItemKind.Keyword;
@@ -682,6 +712,11 @@ export function GetGlobalVariables(): CompletionItem[] {
             label: 'SendBounceIfActionFail',
         },
         {
+            detail: 'Int 1024',
+            kind: CompletionItemKind.Variable,
+            label: 'SendOnlyEstimateFee',
+        },
+        {
             detail: 'Int 0',
             kind: CompletionItemKind.Variable,
             label: 'ReserveExact',
@@ -717,11 +752,81 @@ export function GetGlobalVariables(): CompletionItem[] {
 export function GetGlobalFunctions(): CompletionItem[] {
     return [
         {
-            detail: 'Get context.',
+            detail: 'Get Context.',
             insertText: 'context()',
             insertTextFormat: 2,
             kind: CompletionItemKind.Function,
             label: 'context',
+        },
+        {
+            detail: 'Queue a message to be sent.',
+            insertText: 'send(SendParameters{to: ${1:address}, value: ${2:0}})',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'send',
+        },
+        {
+            detail: 'Queue a message Cell to be sent.',
+            insertText: 'nativeSendMessage(${1:cell}, ${2:mode})',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'nativeSendMessage',
+        },
+        {
+            detail: 'Queue a message Cell to be sent and get forward fees.',
+            insertText: 'nativeSendMessageReturnForwardFee(${1:cell}, ${2:mode})',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'nativeSendMessageReturnForwardFee',
+        },
+        {
+            detail: 'Parse StdAddress from a Slice.',
+            insertText: 'parseStdAddress(${1:slice})',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'parseStdAddress',
+        },
+        {
+            detail: 'Parse VarAddress from a Slice.',
+            insertText: 'parseVarAddress(${1:slice})',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'parseVarAddress',
+        },
+        {
+            detail: 'Convert Base64 BoC to Cell.',
+            insertText: 'cell()',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'cell',
+        },
+        {
+            detail: 'Convert Base64 BoC to Slice at compile-time.',
+            insertText: 'slice()',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'slice',
+        },
+        {
+            detail: 'String to Slice at compile-time.',
+            insertText: 'rawSlice()',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'rawSlice',
+        },
+        {
+            detail: 'Int sum of ASCII values at compile-time.',
+            insertText: 'ascii()',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'ascii',
+        },
+        {
+            detail: 'CRC32 of a String at compile-time.',
+            insertText: 'crc32()',
+            insertTextFormat: 2,
+            kind: CompletionItemKind.Function,
+            label: 'crc32',
         },
         {
             detail: 'Get config parameters.',
@@ -868,6 +973,60 @@ export function GetGlobalFunctions(): CompletionItem[] {
             kind: CompletionItemKind.Property,
             label: 'emit()',
         },
+        {
+            detail: 'Gas consumed so far.',
+            kind: CompletionItemKind.Property,
+            label: "gasConsumed()",
+        },
+        {
+            detail: 'Compute cost in nanotons.',
+            kind: CompletionItemKind.Property,
+            insertText: "getComputeFee(${1:gas_used_Int, ${2:is_masterchain_Bool})",
+            insertTextFormat: 2,
+            label: 'getComputeFee',
+        },
+        {
+            detail: 'Storage fees in nanotons.',
+            kind: CompletionItemKind.Property,
+            insertText: "getStorageFee(${1:cells_Int, ${2:bits_Int}, ${3:seconds_Int}, ${4:is_masterchain_Bool})",
+            insertTextFormat: 2,
+            label: 'getStorageFee',
+        },
+        {
+            detail: 'Forward fees in nanotons.',
+            kind: CompletionItemKind.Property,
+            insertText: "getForwardFee(${1:cells_Int, ${2:bits_Int}, ${3:is_masterchain_Bool})",
+            insertTextFormat: 2,
+            label: 'getForwardFee',
+        },
+        {
+            detail: 'Extra compute cost in nanotons.',
+            kind: CompletionItemKind.Property,
+            insertText: "getSimpleComputeFee(${1:gas_used_Int, ${2:is_masterchain_Bool})",
+            insertTextFormat: 2,
+            label: 'getSimpleComputeFee',
+        },
+        {
+            detail: 'Extra forward fees in nanotons.',
+            kind: CompletionItemKind.Property,
+            insertText: "getSimpleForwardFee(${1:cells_Int, ${2:bits_Int}, ${3:is_masterchain_Bool})",
+            insertTextFormat: 2,
+            label: 'getSimpleForwardFee',
+        },
+        {
+            detail: 'Original fwd_fee in nanotons.',
+            kind: CompletionItemKind.Property,
+            insertText: "getOriginalFwdFee(${1:fwd_fee_Int, ${2:is_masterchain_Bool})",
+            insertTextFormat: 2,
+            label: 'getOriginalFwdFee',
+        },
+        {
+            detail: 'Storage fee debt in nanotons.',
+            kind: CompletionItemKind.Property,
+            insertText: "myStorageDue(${1:fwd_fee_Int, ${2:is_masterchain_Bool})",
+            insertTextFormat: 2,
+            label: 'myStorageDue',
+        },
     ];
 }
 
@@ -894,8 +1053,24 @@ function isAutocompleteTrigeredByVariableName(variableName: string, lineText: st
 let CascadeAssociativeArray: {[propKey: string]: string} = {
     "contractAddress": "Address",
     "contractAddressExt": "Address",
+    "send": "Int",
+    "nativeSendMessageReturnForwardFee": "Int",
     "cell": "Cell",
+    "slice": "Slice",
+    "rawSlice": "Slice",
+    "ascii": "Int",
+    "crc32": "Int",
     "context": "Context",
+    "parseStdAddress": "StdAddress",
+    "parseVarAddress": "VarAddress",
+    "gasConsumed": "Int",
+    "getComputeFee": "Int",
+    "getStorageFee": "Int",
+    "getForwardFee": "Int",
+    "getSimpleComputeFee": "Int",
+    "getSimpleForwardFee": "Int",
+    "getOriginalFwdFee": "Int",
+    "myStorageDue": "Int",
     "beginString": "StringBuilder",
     "beginComment": "StringBuilder",
     "beginTailString": "StringBuilder",
@@ -915,16 +1090,21 @@ let CascadeAssociativeArray: {[propKey: string]: string} = {
     "endCell": "Cell",
     "storeUint": "Builder",
     "storeInt": "Builder",
+    "storeBit": "Builder",
+    "storeBuilder": "Builder",
     "storeBool": "Builder",
     "storeSlice": "Builder",
     "storeCoins": "Builder",
     "storeAddress": "Builder",
     "storeRef": "Builder",
+    "storeMaybeRef": "Builder",
     "refs": "Int",
     "bits": "Int",
     "hash": "Int",
     "loadAddress": "Address",
     "loadInt": "Int",
+    "loadBit": "Bool",
+    "loadBool": "Bool",
     "loadBits": "Slice",
     "loadUint": "Int",
     "loadCoins": "Int",
@@ -1157,6 +1337,76 @@ function getMathCompletionItems(): CompletionItem[] {
     ]
 }
 
+function getStdAddressCompletionItems(): CompletionItem[] {
+    return [
+        {
+            detail: 'Int as int8',
+            kind: CompletionItemKind.Property,
+            label: 'workchain',
+        },
+        {
+            detail: 'Int as uint256',
+            kind: CompletionItemKind.Property,
+            label: 'address',
+        },
+    ];
+}
+
+function getVarAddressCompletionItems(): CompletionItem[] {
+    return [
+        {
+            detail: 'Int as int32',
+            kind: CompletionItemKind.Property,
+            label: 'workchain',
+        },
+        {
+            detail: 'Slice',
+            kind: CompletionItemKind.Property,
+            label: 'address',
+        },
+    ];
+}
+
+function getSendParametersCompletionItems(): CompletionItem[] {
+    return [
+        {
+            detail: 'Bool, defaults to true',
+            kind: CompletionItemKind.Property,
+            label: 'bounce',
+        },
+        {
+            detail: 'Address',
+            kind: CompletionItemKind.Property,
+            label: 'to',
+        },
+        {
+            detail: 'Int',
+            kind: CompletionItemKind.Property,
+            label: 'value',
+        },
+        {
+            detail: 'Int, defaults to 0',
+            kind: CompletionItemKind.Property,
+            label: 'mode',
+        },
+        {
+            detail: 'Cell?',
+            kind: CompletionItemKind.Property,
+            label: 'body',
+        },
+        {
+            detail: 'Cell?',
+            kind: CompletionItemKind.Property,
+            label: 'code',
+        },
+        {
+            detail: 'Cell?',
+            kind: CompletionItemKind.Property,
+            label: 'data',
+        },
+    ];
+}
+
 function getContextCompletionItems(): CompletionItem[] {
     return [
         {
@@ -1187,14 +1437,14 @@ function getMapCompletionItems(): CompletionItem[] {
         {
             detail: 'Get element',
             kind: CompletionItemKind.Property,
-            insertText: "get()",
+            insertText: "get(${1:key})",
             insertTextFormat: 2,
             label: 'get',
         },
         {
             detail: 'Set element',
             kind: CompletionItemKind.Property,
-            insertText: "set()",
+            insertText: "set(${1:key}, ${2:value})",
             insertTextFormat: 2,
             label: 'set',
         },
@@ -1211,6 +1461,20 @@ function getMapCompletionItems(): CompletionItem[] {
             insertText: "isEmpty()",
             insertTextFormat: 2,
             label: 'isEmpty',
+        },
+        {
+            detail: 'Key exists',
+            kind: CompletionItemKind.Property,
+            insertText: "exists()",
+            insertTextFormat: 2,
+            label: 'exists',
+        },
+        {
+            detail: 'Deep equality check',
+            kind: CompletionItemKind.Property,
+            insertText: "deepEquals(${1:anotherMap})",
+            insertTextFormat: 2,
+            label: 'deepEquals',
         },
     ]
 }
@@ -1289,6 +1553,20 @@ function getStructCompletionItems(): CompletionItem[] {
             insertText: "fromSlice()",
             insertTextFormat: 2,
             label: 'fromSlice',
+        },
+        {
+            detail: 'Struct to Cell.',
+            kind: CompletionItemKind.Property,
+            insertText: "toCell()",
+            insertTextFormat: 2,
+            label: 'toCell',
+        },
+        {
+            detail: 'Struct to Slice.',
+            kind: CompletionItemKind.Property,
+            insertText: "toSlice()",
+            insertTextFormat: 2,
+            label: 'toSlice',
         },
     ];
 }
@@ -1395,21 +1673,21 @@ function getBuilderCompletionItems(): CompletionItem[] {
             label: 'refs',
         },
         {
-            detail: 'End cell and return it.',
+            detail: 'Returns a constructed Cell',
             kind: CompletionItemKind.Property,
             insertText: "endCell()",
             insertTextFormat: 2,
             label: 'endCell',
         },
         {
-            detail: 'Store address.',
+            detail: 'Store Address.',
             kind: CompletionItemKind.Property,
             insertText: "storeAddress(${1:Address})",
             insertTextFormat: 2,
             label: 'storeAddress',
         },
         {
-            detail: 'Store slice.',
+            detail: 'Store Slice.',
             kind: CompletionItemKind.Property,
             insertText: "storeSlice(${1:Slice})",
             insertTextFormat: 2,
@@ -1423,6 +1701,13 @@ function getBuilderCompletionItems(): CompletionItem[] {
             label: 'storeRef',
         },
         {
+            detail: 'Store ref to Cell?.',
+            kind: CompletionItemKind.Property,
+            insertText: "storeMaybeRef(${1:CellOrNull})",
+            insertTextFormat: 2,
+            label: 'storeMaybeRef',
+        },
+        {
             detail: 'Store coins.',
             kind: CompletionItemKind.Property,
             insertText: "storeCoins(${1:Int})",
@@ -1430,11 +1715,25 @@ function getBuilderCompletionItems(): CompletionItem[] {
             label: 'storeCoins',
         },
         {
-            detail: 'Store bool.',
+            detail: 'Store Bool.',
             kind: CompletionItemKind.Property,
             insertText: "storeBool(${1:Bool})",
             insertTextFormat: 2,
             label: 'storeBool',
+        },
+        {
+            detail: 'Alias to .storeBool().',
+            kind: CompletionItemKind.Property,
+            insertText: "storeBit(${1:Bool})",
+            insertTextFormat: 2,
+            label: 'storeBit',
+        },
+        {
+            detail: 'Store Builder.',
+            kind: CompletionItemKind.Property,
+            insertText: "storeBuilder(${1:Builder})",
+            insertTextFormat: 2,
+            label: 'storeBuilder',
         },
         {
             detail: 'Store UInt.',
@@ -1512,21 +1811,21 @@ function getSliceCompletionItems(): CompletionItem[] {
             label: 'preloadBits',
         },
         {
-            detail: 'Load integer.',
+            detail: 'Load Int.',
             kind: CompletionItemKind.Property,
             insertText: "loadInt(${1:Int})",
             insertTextFormat: 2,
             label: 'loadInt',
         },
         {
-            detail: 'Preload integer.',
+            detail: 'Preload Int.',
             kind: CompletionItemKind.Property,
             insertText: "preloadInt(${1:Int})",
             insertTextFormat: 2,
             label: 'preloadInt',
         },
         {
-            detail: 'Load UInt.',
+            detail: 'Load unsigned Int.',
             kind: CompletionItemKind.Property,
             insertText: "loadUint(${1:Int})",
             insertTextFormat: 2,
@@ -1540,7 +1839,14 @@ function getSliceCompletionItems(): CompletionItem[] {
             label: 'loadBool',
         },
         {
-            detail: 'Preload Uint.',
+            detail: 'Alias to .loadBool().',
+            kind: CompletionItemKind.Property,
+            insertText: "loadBit(${1:Bool})",
+            insertTextFormat: 2,
+            label: 'loadBit',
+        },
+        {
+            detail: 'Preload unsigned Int.',
             kind: CompletionItemKind.Property,
             insertText: "preloadUint(${1:Int})",
             insertTextFormat: 2,
@@ -1554,7 +1860,7 @@ function getSliceCompletionItems(): CompletionItem[] {
             label: 'loadCoins',
         },
         {
-            detail: 'Load address.',
+            detail: 'Load Address.',
             kind: CompletionItemKind.Property,
             insertText: "loadAddress()",
             insertTextFormat: 2,

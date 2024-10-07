@@ -48,6 +48,16 @@ const FunctionDefinition = {
     return [
       group([
         node.is_native ? `@name(${path.call(print, 'idNative')})\n`: '',
+        node.is_asm ? 'asm' + (node.arrangement
+          ? group([
+            '(',
+            node.arrangement.args?.join(' ') ?? '',
+            node.arrangement.rets
+              ? ' -> ' + node.arrangement.rets.map((x: any) => x.value.toString(10)).join(' ')
+              : '',
+            ')',
+          ])
+          : '') : '',
         node.is_extends ? 'extends ' : null ?? node.is_abstract ? 'abstract ' : null ?? '',
         functionName(node, options, path, print),
         '(',
