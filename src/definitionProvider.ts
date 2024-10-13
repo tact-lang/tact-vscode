@@ -47,72 +47,71 @@ export class TactDefinitionProvider {
       result = tactparse.getPrevResult();
     }
     const element = this.findElementByOffset(result.body, offset);
+    if (element === undefined) { return undefined; }
 
-    if (element !== undefined) {
-      switch (element.type) {
-        case 'ImportStatement':
-          return Promise.resolve(
-            vscode.Location.create(
-              URI.file(this.resolveImportPath(element.from, contract)).toString(),
-              vscode.Range.create(0, 0, 0, 0),
-            ),
+    switch (element.type) {
+      case 'ImportStatement':
+        return Promise.resolve(
+          vscode.Location.create(
+            URI.file(this.resolveImportPath(element.from, contract)).toString(),
+            vscode.Range.create(0, 0, 0, 0),
+          ),
+        );
+      case 'ContractStatement': {
+        // find definition for inheritance
+        const isBlock = this.findElementByOffset(element.is, offset);
+        if (isBlock !== undefined) {
+          let directImport = this.findDirectImport(
+            document,
+            result.body,
+            isBlock.name,
+            'ContractStatement',
+            contracts,
           );
-        case 'ContractStatement': {
-          // find definition for inheritance
-          const isBlock = this.findElementByOffset(element.is, offset);
-          if (isBlock !== undefined) {
-            let directImport = this.findDirectImport(
+          
+          if (directImport.location === undefined) {
+            directImport = this.findDirectImport(
               document,
               result.body,
               isBlock.name,
-              'ContractStatement',
+              'InterfaceStatement',
               contracts,
             );
-            
-            if (directImport.location === undefined) {
-              directImport = this.findDirectImport(
-                document,
-                result.body,
-                isBlock.name,
-                'InterfaceStatement',
-                contracts,
-              );
-            }
-            return Promise.resolve(directImport.location);
           }
+          return Promise.resolve(directImport.location);
+        }
 
-          // find definition in contract body recursively
-          const statement = this.findElementByOffset(element.body, offset);
-          if (statement !== undefined) {
-            return this.provideDefinitionInStatement(
-              document,
-              result.body,
-              statement,
-              element,
-              offset,
-              contracts,
-            );
-          }
-          break;
+        // find definition in contract body recursively
+        const statement = this.findElementByOffset(element.body, offset);
+        if (statement !== undefined) {
+          return this.provideDefinitionInStatement(
+            document,
+            result.body,
+            statement,
+            element,
+            offset,
+            contracts,
+          );
         }
-        case 'InterfaceStatement': {
-          // find definition in interface body recursively
-          const statement = this.findElementByOffset(element.body, offset);
-          if (statement !== undefined) {
-            return this.provideDefinitionInStatement(
-              document,
-              result.body,
-              statement,
-              element,
-              offset,
-              contracts,
-            );
-          }
-          break;
-        }
-        default:
-          break;
+        break;
       }
+      case 'InterfaceStatement': {
+        // find definition in interface body recursively
+        const statement = this.findElementByOffset(element.body, offset);
+        if (statement !== undefined) {
+          return this.provideDefinitionInStatement(
+            document,
+            result.body,
+            statement,
+            element,
+            offset,
+            contracts,
+          );
+        }
+        break;
+      }
+      default:
+        return undefined;
     }
   }
 
