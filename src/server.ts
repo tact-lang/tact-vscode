@@ -110,7 +110,11 @@ connection.onDefinition((handler: TextDocumentPositionParams): Thenable<Location
         provider = new TactDefinitionProvider(rootPath);
         return provider.provideDefinition(documents.get(handler.textDocument.uri) as TextDocument, handler.position);
     } catch(e: any) {
-        let error: String = e.message.match(/(.*) Contract: (.*) at Line: ([0-9]*), Column: ([0-9]*)/);
+        let error = (e.message as string).match(/(.*) Contract: (.*) at Line: ([0-9]*), Column: ([0-9]*)/);
+        if (error === null) {
+            throw e; // not a compiler diagnostic, but a type error
+        }
+
         const compileErrorDiagnostics: Diagnostic[] = [];
         compileErrorDiagnostics.push({
             message: error[1],
