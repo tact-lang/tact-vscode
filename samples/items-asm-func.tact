@@ -4,23 +4,23 @@ asm fun keccak256(s: Slice): Int {
     HASHEXT_KECCAK256
 }
 
-asm( -> 1 0) extends fun loadCoins(self: Slice): Int {
+asm( -> 0) extends fun loadCoins2(self: Slice): Int {
     LDVARUINT16
 }
 
-asm(c b) extends fun storeDict(b: Builder, c: Cell) {
+asm(c self) extends fun storeDict(self: Builder, c: Cell) {
     STDICT
 }
 
-asm(s len -> 1 0) extends fun loadInt(self: Slice, len: Int): Int {
+asm(self len -> 0) extends fun loadInt2(self: Slice, len: Int): Int {
     LDIX
 }
 
-asm fun checkAndRemoveAddExtensionPrefix(self: Slice): Int {
+asm fun checkAndRemoveAddExtensionPrefix(s: Slice): Int {
     x{02} SDBEGINSQ
 }
 
-asm fun checkAndRemoveAddExtensionPrefix() {
+asm fun checkAndRemoveAddExtensionPrefix2() {
     -ROT
 }
 
