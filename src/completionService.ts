@@ -7,13 +7,16 @@ import { CompletionItem, CompletionItemKind } from 'vscode-languageserver';
 import * as vscode from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {Contract2, DeclarationType, DocumentContract, Function, TactCodeWalker, Variable, Struct, Message} from './codeWalkerService';
+import { DocumentStore } from './documentStore';
 
 export class CompletionService {
 
     public rootPath: string | undefined;
+    private documentStore: DocumentStore;
 
-    constructor(rootPath: string | undefined) {
+    constructor(rootPath: string | undefined, documentStore: DocumentStore) {
         this.rootPath = rootPath;
+        this.documentStore = documentStore;
     }
 
     public getTypeString(literal: any) {
@@ -160,9 +163,9 @@ export class CompletionService {
         return completionItem;
     }
   
-    public getAllCompletionItems(
+    public async getAllCompletionItems(
         document: TextDocument | undefined,
-        position: vscode.Position ): CompletionItem[] {
+        position: vscode.Position ): Promise<CompletionItem[]> {
         if (document == undefined) {
             return [];
         }
@@ -170,10 +173,10 @@ export class CompletionService {
         let triggeredByImport = false;
         let triggeredByDotStart = 0;
         try {
-            var walker = new TactCodeWalker(this.rootPath);
+            var walker = new TactCodeWalker(this.rootPath, this.documentStore);
             const offset = document.offsetAt(position);
 
-            var documentContractSelected = walker.getAllContracts(document, position);
+            var documentContractSelected = await walker.getAllContracts(document, position);
 
             const lines = document.getText().split(/\r?\n/g);
             triggeredByDotStart = this.getTriggeredByDotStart(lines, position);
