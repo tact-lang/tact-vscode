@@ -20,7 +20,7 @@ This extension provides:
 # Installation
 To install the Tact language support extension for Visual Studio Code, follow these steps:
 ```bash
-git clone https://github.com/ton-core/vscode-tact
+git clone https://github.com/tact-lang/tact-vscode
 cd vscode-tact
 yarn install
 code .
